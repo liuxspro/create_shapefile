@@ -251,8 +251,13 @@ function create_shp() {
 
 <template>
   <div class="h-screen flex flex-col justify-center">
-    <div id="header" class="p-6 bg-slate-100">
-      <h1 class="text-lg pl-2">制作边界文件</h1>
+    <div id="header" class="p-4 bg-slate-100">
+      <a href="/">
+        <div class="flex items-center">
+          <img src="/icon.svg" alt="" width="48px" />
+          <h1 class="text-lg pl-2">制作场地调查边界文件</h1>
+        </div>
+      </a>
       <div class="hidden">
         <n-button type="info" @click="load_csv" class="mx-2 rounded-md">加载 CSV 文件</n-button>
         <n-button type="info" class="mx-2 rounded-lg" disabled dashed>加载 KML 文件</n-button>
@@ -339,7 +344,7 @@ function create_shp() {
                         v-model:value="input_values['SCRQ']"
                         type="date"
                         value-format="yyyy-MM-dd"
-                        placeholder="输入日期"
+                        placeholder="请输入日期"
                       />
                     </n-config-provider>
                   </n-form-item>
