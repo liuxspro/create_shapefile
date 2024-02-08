@@ -27,8 +27,11 @@ import { roundTo } from "round-to";
 import {
   create_geojson_from_points,
   create_vector_layer_from_geojson,
+  create_vector_layer_from_kml,
   generateAndDownloadZip,
   parse_csvdata,
+  clear_vector_layer,
+  convert_coordinates_list_as_csv_data,
 } from "./utils";
 
 // 指北针
@@ -88,6 +91,7 @@ const field_length = {
   SCDW: 254,
   BZ: 254,
 };
+const upload_file_data = ref({ uploaded: false, file: {} });
 let upload_ploygon;
 const map_rotate = ref(0); //地图旋转角度
 
@@ -136,36 +140,54 @@ function logInputValues() {
   console.log("input_values:", input_values.value);
 }
 
-function load_csv() {
-  var input = document.createElement("input");
-  input.type = "file";
-  input.accept = ".csv";
-  // 添加change事件侦听器
-  input.addEventListener("change", function () {
-    // 获取所选文件
-    var file = input.files[0];
-    // 在这里可以处理选定的文件，例如读取文件内容等
-    Papa.parse(file, {
-      skipEmptyLines: true,
-      complete: function (results) {
-        // 解析 csv
-        upload_points.value = parse_csvdata(results.data);
-        // 自动填入带号
-        input_values.value["DH"] = upload_points.value.DH;
-        upload_ploygon = create_geojson_from_points(upload_points.value.lon_lat_points);
-
-        const vec_layer = create_vector_layer_from_geojson(upload_ploygon, false);
-        // console.log();
-        olmap.addLayer(vec_layer);
-        olmap.getView().fit(vec_layer.getSource().getExtent());
-      },
+async function handel_files() {
+  const file_list = this.files;
+  var file = file_list[0];
+  upload_file_data.value.uploaded = true;
+  upload_file_data.value.file = file;
+  const file_type = file.name.split(".")[1];
+  if (file_type == "csv") {
+    const textdata = await file.text();
+    // https://www.papaparse.com/docs#csv-to-json
+    const csv_data = Papa.parse(textdata, {
+      skipEmptyLines: true, // 跳过空行
       header: true, // 如果CSV文件包含标题行，请设置为 true
       dynamicTyping: true, // 尝试将字段自动转换为数值类型
     });
-  });
-  // 模拟点击<input>元素，打开文件选择框
+    // 解析 csv
+    upload_points.value = parse_csvdata(csv_data.data);
+    // 自动填入带号
+    input_values.value["DH"] = upload_points.value.DH;
+    upload_ploygon = create_geojson_from_points(upload_points.value.lon_lat_points);
+    const vec_layer = create_vector_layer_from_geojson(upload_ploygon, false);
+    olmap.addLayer(vec_layer);
+    olmap.getView().fit(vec_layer.getSource().getExtent());
+    file_is_uploaded.value = true;
+  } else if (file_type == "kml") {
+    const kmlData = await file.text();
+    // 创建矢量图层
+    const vectorLayer = create_vector_layer_from_kml(kmlData);
+    const features = vectorLayer.getSource().getFeatures();
+    const points_list = features[0].getGeometry().getCoordinates()[0][0];
+    const csv_data = convert_coordinates_list_as_csv_data(points_list);
+    // 解析 csv
+    upload_points.value = parse_csvdata(csv_data);
+    // 自动填入带号
+    input_values.value["DH"] = upload_points.value.DH;
+    olmap.addLayer(vectorLayer);
+    olmap.getView().fit(vectorLayer.getSource().getExtent());
+    file_is_uploaded.value = true;
+  }
+}
+
+function load_file() {
+  clear_vector_layer(olmap); // 清除矢量图层
+  file_is_uploaded.value = false;
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".csv, .kml";
+  input.addEventListener("change", handel_files);
   input.click();
-  file_is_uploaded.value = true;
 }
 
 function parse_timestamp(timestamp) {
@@ -258,16 +280,11 @@ function create_shp() {
           <h1 class="text-lg pl-2">制作场地调查边界文件</h1>
         </div>
       </a>
-      <div class="hidden">
-        <n-button type="info" @click="load_csv" class="mx-2 rounded-md">加载 CSV 文件</n-button>
-        <n-button type="info" class="mx-2 rounded-lg" disabled dashed>加载 KML 文件</n-button>
-        <n-button type="info" class="mx-2 rounded-lg" disabled dashed>加载 shp 文件</n-button>
-      </div>
     </div>
     <div id="main" class="grow flex flex-col lg:flex-row">
       <div id="side" class="w-full lg:w-2/5 px-8 py-4 lg:py-8">
         <div class="mb-2 p-1 lg:p-4 border border-slate-300 rounded-md">
-          <n-button quaternary @click="load_csv" class="w-full text-left">
+          <n-button quaternary @click="load_file" class="w-full text-left">
             <template #icon>
               <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 256 256">
                 <g fill="currentColor">
@@ -278,9 +295,13 @@ function create_shp() {
                 </g>
               </svg>
             </template>
-            <p>加载 CSV 文件</p></n-button
+            <p>加载 CSV / KML 文件</p></n-button
           >
         </div>
+        <div class="mb-2 p-4 lg:p-4 border border-slate-300 rounded-md" v-if="upload_file_data.uploaded">
+          当前文件: {{ upload_file_data.file.name }}
+        </div>
+        <!-- 填写字段 -->
         <div class="mb-2 p-4 lg:p-4 border border-slate-300 rounded-md">
           <n-collapse :default-expanded-names="['1']" class="min-h-4">
             <n-collapse-item name="1">
@@ -293,7 +314,7 @@ function create_shp() {
                 </n-form>
               </div>
               <!-- 填写字段 -->
-              <div id="fields" class="">
+              <div id="fields">
                 <!-- 必要字段 文本型 -->
                 <n-form label-placement="left" label-width="5rem" show-require-mark :show-feedback="false">
                   <n-form-item :label="item" v-for="item in necessary_fields_char" :key="item" class="mb-3">
@@ -308,7 +329,7 @@ function create_shp() {
                   </n-form-item>
                 </n-form>
 
-                <div class="">
+                <div>
                   <!-- 必要字段  地块面积和带号 -->
                   <n-form label-placement="left" show-require-mark :show-feedback="false">
                     <n-form-item label="YDMJ" class="mb-3">
@@ -361,8 +382,6 @@ function create_shp() {
                   </n-form-item>
                 </n-form>
                 <!-- 其他字段 -->
-
-                <n-form label-placement="left"> </n-form>
               </div>
             </n-collapse-item>
           </n-collapse>

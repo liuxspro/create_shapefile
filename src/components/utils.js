@@ -2,7 +2,8 @@ import GeoJSON from "ol/format/GeoJSON.js";
 import { Vector as VectorSource } from "ol/source";
 import { Vector as VectorLayer } from "ol/layer";
 import { transform } from "ol/proj";
-import { Fill, Stroke, Style } from "ol/style.js";
+import { Fill, Stroke, Style, Text } from "ol/style.js";
+import KML from "ol/format/KML.js";
 
 import * as shpwrite from "@mapbox/shp-write";
 import JSZip from "jszip";
@@ -33,6 +34,20 @@ const styles = {
   }),
 };
 
+function clear_vector_layer(map) {
+  // 获取所有图层
+  const allLayers = map.getAllLayers();
+  // 遍历图层并移除 VectorLayer
+  allLayers.forEach((layer) => {
+    // 判断图层类型是否为 TileLayer
+    if (layer instanceof VectorLayer) {
+      // 移除 TileLayer
+      console.log(layer);
+      map.removeLayer(layer);
+    }
+  });
+}
+
 const styleFunction = function (feature) {
   return styles[feature.getGeometry().getType()];
 };
@@ -51,6 +66,26 @@ function create_geojson_from_points(points, properties = {}) {
       },
     ],
   };
+}
+
+function create_vector_layer_from_kml(kml_data) {
+  // TODO 处理kml为点图层的情况
+  const kmlFormat = new KML();
+  // 通过 KML 格式对象解析数据
+  const kmlFeatures = kmlFormat.readFeatures(kml_data, {
+    dataProjection: "EPSG:4326", // 数据投影
+    featureProjection: "EPSG:4326", // 地图投影
+  });
+  // 创建矢量数据源
+  const vectorSource = new VectorSource({
+    features: kmlFeatures,
+  });
+  // 创建矢量图层
+  const vectorLayer = new VectorLayer({
+    source: vectorSource,
+    style: styleFunction,
+  });
+  return vectorLayer;
 }
 
 function create_vector_layer_from_geojson(geojson_data, trans = true) {
@@ -97,7 +132,7 @@ function get_digits(n) {
   return integerPart.toString().length;
 }
 
-function get_points_from_cav_record(record) {
+function get_points_from_csv_record(record) {
   // 解析每一个 csv 记录,判断是经纬度还是投影坐标系, 并调整投影坐标 X Y 的顺序
   const keys = Object.keys(record);
   if (keys.length == 3) {
@@ -137,8 +172,11 @@ function parse_csvdata(data) {
    * 输入 Y 为东坐标（横坐标）, 需要+500000, 有带号即为8位, 无带号为6位
    * 但是在 GIS 里面一般X是横坐标（需要带号）, Y为纵坐标（恒正, 7位数）
    * 经过 proj4 转化的坐标 X Y 属性是满足 GIS 要求的,不需要交换位置了
+   *
+   * csv data
+   * [{"编号": 1,"经度": 117.51307,"纬度": 34.307738},{},{},..]
    */
-  const simple_points = get_points_from_cav_record(data[0]);
+  const simple_points = get_points_from_csv_record(data[0]);
   const x = simple_points[0];
   const y = simple_points[1];
   let WKT;
@@ -153,12 +191,12 @@ function parse_csvdata(data) {
       const EPSG_CODE = CGCS2000_3_Degree_CODE[DH];
       WKT = CGCS2000_3_Degree_ERSI_WKT[EPSG_CODE];
       proj_points = data.map((item) => {
-        const p = get_points_from_cav_record(item);
+        const p = get_points_from_csv_record(item);
         // 满足 GIS 坐标系定义, 交换 X Y 位置
         return [p[1], p[0]];
       });
       lon_lat_points = data.map((item) => {
-        const p = get_points_from_cav_record(item);
+        const p = get_points_from_csv_record(item);
         return proj4(WKT).inverse([p[1], p[0]]);
       });
     } else if (get_digits(y) == 6) {
@@ -168,14 +206,14 @@ function parse_csvdata(data) {
   } else {
     // 经纬度坐标
     lon_lat_points = data.map((item) => {
-      const p = get_points_from_cav_record(item);
+      const p = get_points_from_csv_record(item);
       return [p[0], p[1]];
     });
     DH = get_zone(x);
     const EPSG_CODE = CGCS2000_3_Degree_CODE[DH];
     WKT = CGCS2000_3_Degree_ERSI_WKT[EPSG_CODE];
     proj_points = data.map((item) => {
-      const p = get_points_from_cav_record(item);
+      const p = get_points_from_csv_record(item);
       // 从经纬度转为投影坐标
       // 经过 proj4 转化的坐标 X Y 属性是满足 GIS 要求的,不需要交换位置了
       return proj4(WKT).forward([p[0], p[1]]);
@@ -189,4 +227,23 @@ function parse_csvdata(data) {
   };
 }
 
-export { create_geojson_from_points, create_vector_layer_from_geojson, generateAndDownloadZip, parse_csvdata };
+// 转换函数
+function convert_coordinates_list_as_csv_data(coordinates_list) {
+  return coordinates_list.map((coord, index) => {
+    return {
+      id: index + 1,
+      经度: coord[0],
+      纬度: coord[1],
+    };
+  });
+}
+
+export {
+  create_geojson_from_points,
+  create_vector_layer_from_geojson,
+  create_vector_layer_from_kml,
+  generateAndDownloadZip,
+  parse_csvdata,
+  clear_vector_layer,
+  convert_coordinates_list_as_csv_data,
+};
