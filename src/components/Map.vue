@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 
 import { Map, View } from "ol";
 import XYZ from "ol/source/XYZ.js";
@@ -17,6 +17,9 @@ import {
   NCollapseItem,
   NForm,
   NFormItem,
+  useOsTheme,
+  darkTheme,
+  NCard,
 } from "naive-ui";
 import { NConfigProvider } from "naive-ui";
 import { zhCN, dateZhCN } from "naive-ui";
@@ -24,11 +27,18 @@ import { zhCN, dateZhCN } from "naive-ui";
 import Papa from "papaparse";
 import { roundTo } from "round-to";
 
+const osThemeRef = useOsTheme();
+const theme = computed(() => {
+  return osThemeRef.value === "dark" ? darkTheme : null;
+});
 import {
   create_geojson_from_points,
   create_vector_layer_from_geojson,
+  create_vector_layer_from_kml,
   generateAndDownloadZip,
   parse_csvdata,
+  clear_vector_layer,
+  convert_coordinates_list_as_csv_data,
 } from "./utils";
 
 // 指北针
@@ -37,7 +47,6 @@ const northArrowControl = new Control({
 });
 
 northArrowControl.element.addEventListener("click", () => {
-  console.log(this);
   olmap.getView().setRotation(0);
 });
 
@@ -88,6 +97,7 @@ const field_length = {
   SCDW: 254,
   BZ: 254,
 };
+const upload_file_data = ref({ uploaded: false, file: {} });
 let upload_ploygon;
 const map_rotate = ref(0); //地图旋转角度
 
@@ -120,7 +130,6 @@ function create_ol_map() {
   olmap.getView().on("change:rotation", function (event) {
     // 获取视图的旋转角度
     map_rotate.value = event.target.getRotation();
-    console.log(map_rotate.value);
     // 旋转控件
     rotateControl(map_rotate.value);
   });
@@ -136,36 +145,54 @@ function logInputValues() {
   console.log("input_values:", input_values.value);
 }
 
-function load_csv() {
-  var input = document.createElement("input");
-  input.type = "file";
-  input.accept = ".csv";
-  // 添加change事件侦听器
-  input.addEventListener("change", function () {
-    // 获取所选文件
-    var file = input.files[0];
-    // 在这里可以处理选定的文件，例如读取文件内容等
-    Papa.parse(file, {
-      skipEmptyLines: true,
-      complete: function (results) {
-        // 解析 csv
-        upload_points.value = parse_csvdata(results.data);
-        // 自动填入带号
-        input_values.value["DH"] = upload_points.value.DH;
-        upload_ploygon = create_geojson_from_points(upload_points.value.lon_lat_points);
-
-        const vec_layer = create_vector_layer_from_geojson(upload_ploygon, false);
-        // console.log();
-        olmap.addLayer(vec_layer);
-        olmap.getView().fit(vec_layer.getSource().getExtent());
-      },
+async function handel_files() {
+  const file_list = this.files;
+  var file = file_list[0];
+  upload_file_data.value.uploaded = true;
+  upload_file_data.value.file = file;
+  const file_type = file.name.split(".")[1];
+  if (file_type == "csv") {
+    const textdata = await file.text();
+    // https://www.papaparse.com/docs#csv-to-json
+    const csv_data = Papa.parse(textdata, {
+      skipEmptyLines: true, // 跳过空行
       header: true, // 如果CSV文件包含标题行，请设置为 true
       dynamicTyping: true, // 尝试将字段自动转换为数值类型
     });
-  });
-  // 模拟点击<input>元素，打开文件选择框
+    // 解析 csv
+    upload_points.value = parse_csvdata(csv_data.data);
+    // 自动填入带号
+    input_values.value["DH"] = upload_points.value.DH;
+    upload_ploygon = create_geojson_from_points(upload_points.value.lon_lat_points);
+    const vec_layer = create_vector_layer_from_geojson(upload_ploygon, false);
+    olmap.addLayer(vec_layer);
+    olmap.getView().fit(vec_layer.getSource().getExtent());
+    file_is_uploaded.value = true;
+  } else if (file_type == "kml") {
+    const kmlData = await file.text();
+    // 创建矢量图层
+    const vectorLayer = create_vector_layer_from_kml(kmlData);
+    const features = vectorLayer.getSource().getFeatures();
+    const points_list = features[0].getGeometry().getCoordinates()[0][0];
+    const csv_data = convert_coordinates_list_as_csv_data(points_list);
+    // 解析 csv
+    upload_points.value = parse_csvdata(csv_data);
+    // 自动填入带号
+    input_values.value["DH"] = upload_points.value.DH;
+    olmap.addLayer(vectorLayer);
+    olmap.getView().fit(vectorLayer.getSource().getExtent());
+    file_is_uploaded.value = true;
+  }
+}
+
+function load_file() {
+  clear_vector_layer(olmap); // 清除矢量图层
+  file_is_uploaded.value = false;
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".csv, .kml";
+  input.addEventListener("change", handel_files);
   input.click();
-  file_is_uploaded.value = true;
 }
 
 function parse_timestamp(timestamp) {
@@ -250,122 +277,128 @@ function create_shp() {
 </script>
 
 <template>
-  <div class="h-screen flex flex-col justify-center">
-    <div id="header" class="p-4 bg-slate-100">
+  <div class="h-screen flex flex-col justify-center bg-slate-50 dark:bg-slate-600">
+    <div id="header" class="p-4 bg-slate-100 dark:bg-slate-700">
       <a href="/">
-        <div class="flex items-center">
+        <div class="flex items-center ml-2">
           <img src="/icon.svg" alt="" width="48px" />
           <h1 class="text-lg pl-2">制作场地调查边界文件</h1>
         </div>
       </a>
-      <div class="hidden">
-        <n-button type="info" @click="load_csv" class="mx-2 rounded-md">加载 CSV 文件</n-button>
-        <n-button type="info" class="mx-2 rounded-lg" disabled dashed>加载 KML 文件</n-button>
-        <n-button type="info" class="mx-2 rounded-lg" disabled dashed>加载 shp 文件</n-button>
-      </div>
     </div>
     <div id="main" class="grow flex flex-col lg:flex-row">
       <div id="side" class="w-full lg:w-2/5 px-8 py-4 lg:py-8">
         <div class="mb-2 p-1 lg:p-4 border border-slate-300 rounded-md">
-          <n-button quaternary @click="load_csv" class="w-full text-left">
-            <template #icon>
-              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 256 256">
-                <g fill="currentColor">
-                  <path d="M208 88h-56V32Z" opacity=".2" />
-                  <path
-                    d="M48 180c0 11 7.18 20 16 20a14.24 14.24 0 0 0 10.22-4.66a8 8 0 0 1 11.56 11.06A30.06 30.06 0 0 1 64 216c-17.65 0-32-16.15-32-36s14.35-36 32-36a30.06 30.06 0 0 1 21.78 9.6a8 8 0 0 1-11.56 11.06A14.24 14.24 0 0 0 64 160c-8.82 0-16 9-16 20m79.6-8.69c-4-1.16-8.14-2.35-10.45-3.84c-1.25-.81-1.23-1-1.12-1.9a4.57 4.57 0 0 1 2-3.67c4.6-3.12 15.34-1.73 19.83-.56a8 8 0 0 0 4.14-15.48c-2.12-.55-21-5.22-32.84 2.76a20.58 20.58 0 0 0-9 14.95c-2 15.88 13.65 20.41 23 23.11c12.06 3.49 13.12 4.92 12.78 7.59c-.31 2.41-1.26 3.34-2.14 3.93c-4.6 3.06-15.17 1.56-19.55.36a8 8 0 0 0-4.31 15.44a61.34 61.34 0 0 0 15.19 2c5.82 0 12.3-1 17.49-4.46a20.82 20.82 0 0 0 9.19-15.23c2.19-17.31-14.32-22.14-24.21-25m83.09-26.84a8 8 0 0 0-10.23 4.84L188 184.21l-12.47-34.9a8 8 0 0 0-15.07 5.38l20 56a8 8 0 0 0 15.07 0l20-56a8 8 0 0 0-4.84-10.22M216 88v24a8 8 0 0 1-16 0V96h-48a8 8 0 0 1-8-8V40H56v72a8 8 0 0 1-16 0V40a16 16 0 0 1 16-16h96a8 8 0 0 1 5.66 2.34l56 56A8 8 0 0 1 216 88m-27.31-8L160 51.31V80Z"
-                  />
-                </g>
-              </svg>
-            </template>
-            <p>加载 CSV 文件</p></n-button
-          >
-        </div>
-        <div class="mb-2 p-4 lg:p-4 border border-slate-300 rounded-md">
-          <n-collapse :default-expanded-names="['1']" class="min-h-4">
-            <n-collapse-item name="1">
-              <template #header><h1 class="text-center w-full">填写字段</h1></template>
-              <div class="mt-2">
-                <n-form label-placement="left" :show-feedback="false">
-                  <n-form-item label="调查阶段:" class="mb-3">
-                    <n-select v-model:value="select_stage" :options="stage_options" placeholder="选择调查阶段" />
-                  </n-form-item>
-                </n-form>
-              </div>
-              <!-- 填写字段 -->
-              <div id="fields" class="">
-                <!-- 必要字段 文本型 -->
-                <n-form label-placement="left" label-width="5rem" show-require-mark :show-feedback="false">
-                  <n-form-item :label="item" v-for="item in necessary_fields_char" :key="item" class="mb-3">
-                    <n-input
-                      size=""
-                      v-model:value="input_values[item]"
-                      :maxlength="field_length[item]"
-                      show-count
-                      type="text"
-                      v-bind:placeholder="'请输入' + fileds_info[item]"
+          <n-config-provider :theme="theme">
+            <n-button quaternary @click="load_file" class="w-full text-left">
+              <template #icon>
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 256 256">
+                  <g fill="currentColor">
+                    <path d="M208 88h-56V32Z" opacity=".2" />
+                    <path
+                      d="M48 180c0 11 7.18 20 16 20a14.24 14.24 0 0 0 10.22-4.66a8 8 0 0 1 11.56 11.06A30.06 30.06 0 0 1 64 216c-17.65 0-32-16.15-32-36s14.35-36 32-36a30.06 30.06 0 0 1 21.78 9.6a8 8 0 0 1-11.56 11.06A14.24 14.24 0 0 0 64 160c-8.82 0-16 9-16 20m79.6-8.69c-4-1.16-8.14-2.35-10.45-3.84c-1.25-.81-1.23-1-1.12-1.9a4.57 4.57 0 0 1 2-3.67c4.6-3.12 15.34-1.73 19.83-.56a8 8 0 0 0 4.14-15.48c-2.12-.55-21-5.22-32.84 2.76a20.58 20.58 0 0 0-9 14.95c-2 15.88 13.65 20.41 23 23.11c12.06 3.49 13.12 4.92 12.78 7.59c-.31 2.41-1.26 3.34-2.14 3.93c-4.6 3.06-15.17 1.56-19.55.36a8 8 0 0 0-4.31 15.44a61.34 61.34 0 0 0 15.19 2c5.82 0 12.3-1 17.49-4.46a20.82 20.82 0 0 0 9.19-15.23c2.19-17.31-14.32-22.14-24.21-25m83.09-26.84a8 8 0 0 0-10.23 4.84L188 184.21l-12.47-34.9a8 8 0 0 0-15.07 5.38l20 56a8 8 0 0 0 15.07 0l20-56a8 8 0 0 0-4.84-10.22M216 88v24a8 8 0 0 1-16 0V96h-48a8 8 0 0 1-8-8V40H56v72a8 8 0 0 1-16 0V40a16 16 0 0 1 16-16h96a8 8 0 0 1 5.66 2.34l56 56A8 8 0 0 1 216 88m-27.31-8L160 51.31V80Z"
                     />
-                  </n-form-item>
-                </n-form>
-
-                <div class="">
-                  <!-- 必要字段  地块面积和带号 -->
-                  <n-form label-placement="left" show-require-mark :show-feedback="false">
-                    <n-form-item label="YDMJ" class="mb-3">
-                      <n-input-number
-                        size="medium"
-                        :precision="2"
-                        v-model:value="input_values['YDMJ']"
-                        v-bind:placeholder="'请输入' + fileds_info['YDMJ']"
-                        clearable
-                        class="w-full"
-                        label-width="5rem"
-                      />
-                    </n-form-item>
-                    <n-form-item label="DH" class="mb-3">
-                      <n-input-number
-                        size="medium"
-                        :precision="0"
-                        v-model:value="input_values['DH']"
-                        v-bind:placeholder="'请输入' + fileds_info['DH']"
-                        clearable
-                        class="w-full"
-                        label-width="5rem"
-                        show-require-mark
-                      />
+                  </g>
+                </svg>
+              </template>
+              <p class="dark:text-slate-200">加载 CSV / KML 文件</p></n-button
+            >
+          </n-config-provider>
+        </div>
+        <div class="mb-2 p-4 lg:p-4 border border-slate-300 rounded-md" v-if="upload_file_data.uploaded">
+          当前文件: {{ upload_file_data.file.name }}
+        </div>
+        <!-- 填写字段 -->
+        <div class="mb-2 p-4 lg:p-4 border border-slate-300 rounded-md">
+          <n-config-provider :theme="theme">
+            <n-collapse :default-expanded-names="['1']" class="min-h-4">
+              <n-collapse-item name="1">
+                <template #header><h1 class="text-center w-full">填写字段</h1></template>
+                <div class="mt-2">
+                  <n-form label-placement="left" :show-feedback="false">
+                    <n-form-item label="调查阶段:" class="mb-3">
+                      <n-select v-model:value="select_stage" :options="stage_options" placeholder="选择调查阶段" />
                     </n-form-item>
                   </n-form>
                 </div>
-                <!-- 日期 -->
-                <n-form label-placement="left" :show-feedback="false">
-                  <n-form-item label="SCRQ" class="mb-3">
-                    <n-config-provider :locale="zhCN" :date-locale="dateZhCN" class="w-full">
-                      <n-date-picker
-                        v-model:value="input_values['SCRQ']"
-                        type="date"
-                        value-format="yyyy-MM-dd"
-                        placeholder="请输入日期"
+                <!-- 填写字段 -->
+                <div id="fields">
+                  <!-- 必要字段 文本型 -->
+                  <n-form label-placement="left" label-width="5rem" show-require-mark :show-feedback="false">
+                    <n-form-item
+                      :label="item"
+                      v-for="item in necessary_fields_char"
+                      :key="item"
+                      class="mb-3 dark:text-slate-100"
+                    >
+                      <n-input
+                        size=""
+                        v-model:value="input_values[item]"
+                        :maxlength="field_length[item]"
+                        show-count
+                        type="text"
+                        v-bind:placeholder="'请输入' + fileds_info[item]"
                       />
-                    </n-config-provider>
-                  </n-form-item>
-                  <n-form-item :label="item" v-for="item in other_fields" :key="item" class="mb-3">
-                    <n-input
-                      size="medium"
-                      v-model:value="input_values[item]"
-                      :maxlength="field_length[item]"
-                      show-count
-                      type="text"
-                      v-bind:placeholder="'请输入' + fileds_info[item]"
-                      class="w-full"
-                    />
-                  </n-form-item>
-                </n-form>
-                <!-- 其他字段 -->
+                    </n-form-item>
+                  </n-form>
 
-                <n-form label-placement="left"> </n-form>
-              </div>
-            </n-collapse-item>
-          </n-collapse>
+                  <div>
+                    <!-- 必要字段  地块面积和带号 -->
+                    <n-form label-placement="left" show-require-mark :show-feedback="false">
+                      <n-form-item label="YDMJ" class="mb-3">
+                        <n-input-number
+                          size="medium"
+                          :precision="2"
+                          v-model:value="input_values['YDMJ']"
+                          v-bind:placeholder="'请输入' + fileds_info['YDMJ']"
+                          clearable
+                          class="w-full"
+                          label-width="5rem"
+                        />
+                      </n-form-item>
+                      <n-form-item label="DH" class="mb-3">
+                        <n-input-number
+                          size="medium"
+                          :precision="0"
+                          v-model:value="input_values['DH']"
+                          v-bind:placeholder="'请输入' + fileds_info['DH']"
+                          clearable
+                          class="w-full"
+                          label-width="5rem"
+                          show-require-mark
+                        />
+                      </n-form-item>
+                    </n-form>
+                  </div>
+                  <!-- 日期 -->
+                  <n-form label-placement="left" :show-feedback="false">
+                    <n-form-item label="SCRQ" class="mb-3">
+                      <n-config-provider :locale="zhCN" :date-locale="dateZhCN" class="w-full">
+                        <n-date-picker
+                          v-model:value="input_values['SCRQ']"
+                          type="date"
+                          value-format="yyyy-MM-dd"
+                          placeholder="请输入日期"
+                        />
+                      </n-config-provider>
+                    </n-form-item>
+                    <n-form-item :label="item" v-for="item in other_fields" :key="item" class="mb-3">
+                      <n-input
+                        size="medium"
+                        v-model:value="input_values[item]"
+                        :maxlength="field_length[item]"
+                        show-count
+                        type="text"
+                        v-bind:placeholder="'请输入' + fileds_info[item]"
+                        class="w-full"
+                      />
+                    </n-form-item>
+                  </n-form>
+                  <!-- 其他字段 -->
+                </div>
+              </n-collapse-item>
+            </n-collapse>
+          </n-config-provider>
         </div>
         <div class="mb-2 p-1 lg:p-4 border border-slate-300 rounded-md">
           <n-button quaternary type="success" class="w-full" @click="create_shp">
