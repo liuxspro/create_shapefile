@@ -66,7 +66,6 @@ function rotateControl(rotation) {
   var controlElement = northArrowControl.element;
   controlElement.style.transform = "rotate(" + rotation + "rad)";
 }
-let olmap = ref();
 
 const necessary_fields_char = ["DKMC", "DKDM", "XZQMC", "XZQDM"];
 const other_fields = ["SCDW", "BZ"];
@@ -86,7 +85,7 @@ const fileds_info = {
   SCDW: "生产单位",
   BZ: "备注",
 };
-const field_length = {
+const fields_length = {
   DKMC: 254,
   DKDM: 100,
   XZQDM: 12,
@@ -98,7 +97,8 @@ const field_length = {
   BZ: 254,
 };
 const upload_file_data = ref({ uploaded: false, file: {} });
-let upload_ploygon;
+// let upload_ploygon;
+let olmap;
 const map_rotate = ref(0); //地图旋转角度
 
 // 用于存储表单input的值
@@ -145,7 +145,7 @@ function logInputValues() {
   console.log("input_values:", input_values.value);
 }
 
-async function handel_files() {
+async function handle_files() {
   const file_list = this.files;
   var file = file_list[0];
   upload_file_data.value.uploaded = true;
@@ -163,7 +163,7 @@ async function handel_files() {
     upload_points.value = parse_csvdata(csv_data.data);
     // 自动填入带号
     input_values.value["DH"] = upload_points.value.DH;
-    upload_ploygon = create_geojson_from_points(upload_points.value.lon_lat_points);
+    const upload_ploygon = create_geojson_from_points(upload_points.value.lon_lat_points);
     const vec_layer = create_vector_layer_from_geojson(upload_ploygon, false);
     olmap.addLayer(vec_layer);
     olmap.getView().fit(vec_layer.getSource().getExtent());
@@ -182,6 +182,9 @@ async function handel_files() {
     olmap.addLayer(vectorLayer);
     olmap.getView().fit(vectorLayer.getSource().getExtent());
     file_is_uploaded.value = true;
+  } else {
+    alert("不支持的文件类型");
+    return;
   }
 }
 
@@ -191,7 +194,7 @@ function load_file() {
   const input = document.createElement("input");
   input.type = "file";
   input.accept = ".csv, .kml";
-  input.addEventListener("change", handel_files);
+  input.addEventListener("change", handle_files);
   input.click();
 }
 
@@ -334,7 +337,7 @@ function create_shp() {
                       <n-input
                         size=""
                         v-model:value="input_values[item]"
-                        :maxlength="field_length[item]"
+                        :maxlength="fields_length[item]"
                         show-count
                         type="text"
                         v-bind:placeholder="'请输入' + fileds_info[item]"
@@ -386,7 +389,7 @@ function create_shp() {
                       <n-input
                         size="medium"
                         v-model:value="input_values[item]"
-                        :maxlength="field_length[item]"
+                        :maxlength="fields_length[item]"
                         show-count
                         type="text"
                         v-bind:placeholder="'请输入' + fileds_info[item]"
@@ -416,7 +419,7 @@ function create_shp() {
       <div id="map" class="px-8 py-4 lg:py-8 lg:pl-0 lg:pr-8 h-1/2 w-full lg:grow lg:h-auto"></div>
     </div>
 
-    <!-- <div id="footer" class="text-center"><p class="p-2">code with ❤️</p></div> -->
+    <div id="footer" class="text-center font-mono text-sm"><p class="p-2">code with ❤️ by Liuxs</p></div>
   </div>
 </template>
 

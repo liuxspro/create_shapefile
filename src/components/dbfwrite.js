@@ -73,7 +73,6 @@ function generate_fields_array(fields) {
       let array;
       if (key === "YDMJ" || key == "DH") {
         array = create_data_array_right(fields[key], FIELD_LENGTH[key]);
-        // console.log(key, buffer.buffer);
       } else {
         array = create_data_array(fields[key], FIELD_LENGTH[key]);
       }
@@ -85,7 +84,7 @@ function generate_fields_array(fields) {
 
 function concatenate(resultConstructor, ...arrays) {
   /**
-   * 合并所有的 Uint8Array 为一个
+   * 合并所有的 Uint8Array
    * https://www.cnblogs.com/qinmengjiao123-123/p/7194169.html
    *
    */
