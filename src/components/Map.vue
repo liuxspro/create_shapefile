@@ -294,8 +294,8 @@ function create_shp() {
                 </g>
               </svg>
             </template>
-            <p class="dark:text-slate-200">加载 CSV / KML 文件</p></n-button
-          >
+            <p class="dark:text-slate-200">加载 CSV / KML 文件</p>
+          </n-button>
         </div>
         <div class="mb-2 p-4 lg:p-4 border border-slate-300 rounded-md" v-if="upload_file_data.uploaded">
           当前文件: {{ upload_file_data.file.name }}
