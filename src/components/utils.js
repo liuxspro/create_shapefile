@@ -119,7 +119,7 @@ function generateAndDownloadZip(points_data, WKT, select_stage, fields) {
     zip_target.file(`${filename}.shp`, files.shp.buffer);
     zip_target.file(`${filename}.shx`, files.shx.buffer);
     zip_target.file(`${filename}.dbf`, dbf_data.buffer);
-    zip_target.file(`${filename}.cfg`, "UTF-8");
+    zip_target.file(`${filename}.cpg`, "UTF-8");
     zip_target.file(`${filename}.prj`, WKT);
     zip.generateAsync({ type: "blob", compression: "DEFLATE" }).then(function (content) {
       saveAs(content, `${filename}.zip`);
