@@ -68,7 +68,8 @@ function generate_fields_array(fields) {
    * 根据字段信息，生成 Uint8Array
    */
   const arrays = [];
-  for (const key in fields) {
+  const fields_order = ["DKMC", "DKDM", "XZQDM", "XZQMC", "YDMJ", "DH", "SCRQ", "SCDW", "BZ"]; // 按此字段顺序写入
+  for (let key of fields_order) {
     if (fields.hasOwnProperty(key) && FIELD_LENGTH[key]) {
       let array;
       if (key === "YDMJ" || key == "DH") {
@@ -102,7 +103,8 @@ function concatenate(resultConstructor, ...arrays) {
 }
 
 function create_dbf(fields) {
-  const array_list = generate_fields_array(fields, FIELD_LENGTH);
+  console.log("create_dbf", fields);
+  const array_list = generate_fields_array(fields);
   const arrays = concatenate(Uint8Array, ...array_list);
   const total = concatenate(Uint8Array, ...[header_data, RECORD_FLAG, arrays, EOF]);
   return total;

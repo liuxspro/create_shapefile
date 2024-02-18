@@ -58,7 +58,7 @@ function rotateControl(rotation) {
   controlElement.style.transform = "rotate(" + rotation + "rad)";
 }
 
-const necessary_fields_char = ["DKMC", "DKDM", "XZQMC", "XZQDM"];
+const necessary_fields_char = ["DKMC", "DKDM", "XZQDM", "XZQMC"];
 const other_fields = ["SCDW", "BZ"];
 const stage_options = [
   { label: "初步调查", value: "初步调查" },
@@ -68,8 +68,8 @@ const select_stage = ref("初步调查");
 const fileds_info = {
   DKMC: "地块名称",
   DKDM: "地块代码",
-  XZQMC: "行政区名称",
   XZQDM: "行政区代码",
+  XZQMC: "行政区名称",
   YDMJ: "地块面积",
   DH: "带号 ",
   SCRQ: "生产日期",
@@ -258,6 +258,7 @@ function correct_fields(fields) {
 
 function create_shp() {
   const fields = correct_fields(input_values.value);
+  console.log(fields);
   const stage = select_stage.value || "初步调查";
   if (!file_is_uploaded.value) {
     alert("请上传CSV文件");
@@ -404,7 +405,7 @@ function create_shp() {
       <div id="map" class="px-8 py-4 lg:py-8 lg:pl-0 lg:pr-8 h-1/2 w-full lg:grow lg:h-auto"></div>
     </div>
 
-    <div id="footer" class="text-center font-mono text-sm"><p class="p-2">code with ❤️ by Liuxs</p></div>
+    <div id="footer" class="text-center font-mono text-sm"><p class="p-1">code with ❤️ by Liuxs</p></div>
   </div>
 </template>
 
