@@ -1,11 +1,10 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 
 import { Map, View } from "ol";
-import XYZ from "ol/source/XYZ.js";
+import { northArrowControl, GoogleMap } from "../utils/ol";
 import TileLayer from "ol/layer/Tile";
 import { ScaleLine, Zoom } from "ol/control";
-import Control from "ol/control/Control.js";
 
 import {
   NButton,
@@ -25,11 +24,9 @@ import { roundTo } from "round-to";
 import {
   create_geojson_from_points,
   create_vector_layer_from_geojson,
-  create_vector_layer_from_kml,
   generateAndDownloadZip,
-  parse_csvdata,
+  get_points_from_csv,
   clear_vector_layer,
-  convert_coordinates_list_as_csv_data,
   get_points_from_kml,
   parse_coordinates_list,
 } from "../utils";
@@ -37,32 +34,6 @@ import {
 import NavBar from "./NavBar.vue";
 
 import { FIELD_LENGTH } from "../utils/dbfwrite";
-
-// 指北针
-const northArrowControl = new Control({
-  element: createNorthArrowElement(),
-});
-
-northArrowControl.element.addEventListener("click", () => {
-  olmap.getView().setRotation(0);
-});
-
-function createNorthArrowElement() {
-  var northArrowSvg =
-    '<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M32.5 23.6023V18.8588L18 59.1786L32.5 49.6916V48.0871L20.6412 55.6209L32.5 23.6023Z" fill="white"/><path d="M32.5 18.8588V49.6916L47 59.1786L32.5 18.8588Z" fill="white"/><path d="M38 4V16H35.8167L30.6153 8.44727H30.5277V16H28V4H30.2183L35.3789 11.5469H35.4839V4H38Z" fill="white"/></svg>';
-  var element = document.createElement("div");
-  element.innerHTML = northArrowSvg;
-  element.style.position = "absolute";
-  element.style.top = "15px"; // 调整 Y 坐标，以便控件位于右上角
-  element.style.right = "15px"; // 调整 X 坐标，以便控件位于右上角
-  return element;
-}
-
-// 旋转控件
-function rotateControl(rotation) {
-  var controlElement = northArrowControl.element;
-  controlElement.style.transform = "rotate(" + rotation + "rad)";
-}
 
 const necessary_fields_char = ["DKMC", "DKDM", "XZQDM", "XZQMC"];
 const other_fields = ["SCDW", "BZ"];
@@ -87,15 +58,18 @@ const upload_file_data = ref({ uploaded: false, file: {} });
 
 let olmap;
 const map_rotate = ref(0); //地图旋转角度
+const input_values = ref({}); // 保存表单 input (字段)的值
+const upload_points = ref({ lon_lat_points: [], proj_points: [], WKT: "", DH: 0 }); // 保存点位信息
 
-// 用于存储表单input的值
-const input_values = ref({});
-const upload_points = ref({ lon_lat_points: [], proj_points: [], WKT: "", DH: 0 });
-const GoogleMap = new XYZ({
-  url: "https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&x={x}&y={y}&z={z}",
+// 旋转控件
+northArrowControl.element.addEventListener("click", () => {
+  olmap.getView().setRotation(0);
 });
-let file_is_uploaded = ref(false);
 
+function rotateControl(rotation) {
+  var controlElement = northArrowControl.element;
+  controlElement.style.transform = "rotate(" + rotation + "rad)";
+}
 function create_ol_map() {
   olmap = new Map({
     target: "map",
@@ -117,7 +91,7 @@ function create_ol_map() {
   olmap.getView().on("change:rotation", function (event) {
     // 获取视图的旋转角度
     map_rotate.value = event.target.getRotation();
-    // 旋转控件
+    // 旋转指北针
     rotateControl(map_rotate.value);
   });
 }
@@ -126,18 +100,13 @@ onMounted(() => {
   create_ol_map();
 });
 
-function logInputValues() {
-  // 输出所有输入的值
-  console.log(upload_points.value);
-  console.log("input_values:", input_values.value);
-}
-
 async function handle_files() {
   const file_list = this.files;
   const file = file_list[0];
-  upload_file_data.value.uploaded = true;
-  upload_file_data.value.file = file;
+  let points;
   const file_type = file.name.split(".")[1];
+  upload_file_data.value.file["name"] = file.name;
+  upload_file_data.value.file["type"] = file_type;
   if (file_type == "csv") {
     const textdata = await file.text();
     // https://www.papaparse.com/docs#csv-to-json
@@ -146,41 +115,31 @@ async function handle_files() {
       header: true, // 如果CSV文件包含标题行，请设置为 true
       dynamicTyping: true, // 尝试将字段自动转换为数值类型
     });
-    // 解析 csv
-    upload_points.value = parse_csvdata(csv_data.data);
-    // 自动填入带号
-    input_values.value["DH"] = upload_points.value.DH;
-    const upload_ploygon = create_geojson_from_points(upload_points.value.lon_lat_points);
-    const vec_layer = create_vector_layer_from_geojson(upload_ploygon, false);
-    olmap.addLayer(vec_layer);
-    olmap.getView().fit(vec_layer.getSource().getExtent());
-    file_is_uploaded.value = true;
+    points = get_points_from_csv(csv_data.data);
   } else if (file_type == "kml") {
     const kmlData = await file.text();
-    // 创建矢量图层
-    const points = get_points_from_kml(kmlData);
+    points = get_points_from_kml(kmlData);
     if (points.length <= 2) {
+      upload_file_data.value.uploaded = false;
       throw new Error("至少需要3个点");
     }
-    console.log(points);
-    console.log(parse_coordinates_list(points));
-    upload_points.value = parse_coordinates_list(points);
-    // 自动填入带号
-    input_values.value["DH"] = upload_points.value.DH;
-    const upload_ploygon = create_geojson_from_points(upload_points.value.lon_lat_points);
-    const vec_layer = create_vector_layer_from_geojson(upload_ploygon, false);
-    olmap.addLayer(vec_layer);
-    olmap.getView().fit(vec_layer.getSource().getExtent());
-    file_is_uploaded.value = true;
   } else {
     alert("不支持的文件类型");
+    upload_file_data.value.uploaded = false;
     return;
   }
+  upload_points.value = parse_coordinates_list(points);
+  input_values.value["DH"] = upload_points.value.DH; // 自动填入带号
+  const upload_ploygon = create_geojson_from_points(upload_points.value.lon_lat_points);
+  const vec_layer = create_vector_layer_from_geojson(upload_ploygon, false);
+  olmap.addLayer(vec_layer);
+  olmap.getView().fit(vec_layer.getSource().getExtent());
+  upload_file_data.value.uploaded = true;
 }
 
 function load_file() {
   clear_vector_layer(olmap); // 清除矢量图层
-  file_is_uploaded.value = false;
+  upload_file_data.value.uploaded = false;
   const input = document.createElement("input");
   input.type = "file";
   input.accept = ".csv, .kml";
@@ -259,7 +218,7 @@ function create_shp() {
   const fields = correct_fields(input_values.value);
   console.log(fields);
   const stage = select_stage.value || "初步调查";
-  if (!file_is_uploaded.value) {
+  if (!upload_file_data.value.uploaded) {
     alert("请上传CSV文件");
     return;
   }
@@ -291,7 +250,10 @@ function create_shp() {
           </n-button>
         </div>
         <div class="mb-2 p-4 lg:p-4 border border-slate-300 rounded-md" v-if="upload_file_data.uploaded">
-          当前文件: {{ upload_file_data.file.name }}
+          <div class="text-xs">
+            <span>当前文件: </span>
+            <code class="border border-slate-300 p-1 rounded-md">{{ upload_file_data.file.name }}</code>
+          </div>
         </div>
         <!-- 填写字段 -->
         <div class="mb-2 p-4 lg:p-4 border border-slate-300 rounded-md">
@@ -391,12 +353,10 @@ function create_shp() {
             </svg>
             &nbsp;生成边界文件
           </n-button>
-          <button @click="logInputValues" class="btn btn-sm btn-accent m-2 hidden">DEBUG Info</button>
         </div>
       </div>
       <div id="map" class="px-8 py-4 lg:py-8 lg:pl-0 lg:pr-8 h-1/2 w-full lg:grow lg:h-auto"></div>
     </div>
-
     <div id="footer" class="text-center font-mono text-sm hidden"><p class="p-1">code with ❤️ by Liuxs</p></div>
   </div>
 </template>
