@@ -30,7 +30,13 @@ import {
   parse_csvdata,
   clear_vector_layer,
   convert_coordinates_list_as_csv_data,
-} from "./utils";
+  get_points_from_kml,
+  parse_coordinates_list,
+} from "../utils";
+
+import NavBar from "./NavBar.vue";
+
+import { FIELD_LENGTH } from "../utils/dbfwrite";
 
 // 指北针
 const northArrowControl = new Control({
@@ -76,17 +82,7 @@ const fileds_info = {
   SCDW: "生产单位",
   BZ: "备注",
 };
-const fields_length = {
-  DKMC: 254,
-  DKDM: 100,
-  XZQDM: 12,
-  XZQMC: 100,
-  YDMJ: 17,
-  DH: 16,
-  SCRQ: 8,
-  SCDW: 254,
-  BZ: 254,
-};
+
 const upload_file_data = ref({ uploaded: false, file: {} });
 
 let olmap;
@@ -138,7 +134,7 @@ function logInputValues() {
 
 async function handle_files() {
   const file_list = this.files;
-  var file = file_list[0];
+  const file = file_list[0];
   upload_file_data.value.uploaded = true;
   upload_file_data.value.file = file;
   const file_type = file.name.split(".")[1];
@@ -162,16 +158,19 @@ async function handle_files() {
   } else if (file_type == "kml") {
     const kmlData = await file.text();
     // 创建矢量图层
-    const vectorLayer = create_vector_layer_from_kml(kmlData);
-    const features = vectorLayer.getSource().getFeatures();
-    const points_list = features[0].getGeometry().getCoordinates()[0][0];
-    const csv_data = convert_coordinates_list_as_csv_data(points_list);
-    // 解析 csv
-    upload_points.value = parse_csvdata(csv_data);
+    const points = get_points_from_kml(kmlData);
+    if (points.length <= 2) {
+      throw new Error("至少需要3个点");
+    }
+    console.log(points);
+    console.log(parse_coordinates_list(points));
+    upload_points.value = parse_coordinates_list(points);
     // 自动填入带号
     input_values.value["DH"] = upload_points.value.DH;
-    olmap.addLayer(vectorLayer);
-    olmap.getView().fit(vectorLayer.getSource().getExtent());
+    const upload_ploygon = create_geojson_from_points(upload_points.value.lon_lat_points);
+    const vec_layer = create_vector_layer_from_geojson(upload_ploygon, false);
+    olmap.addLayer(vec_layer);
+    olmap.getView().fit(vec_layer.getSource().getExtent());
     file_is_uploaded.value = true;
   } else {
     alert("不支持的文件类型");
@@ -273,14 +272,7 @@ function create_shp() {
 
 <template>
   <div class="h-screen flex flex-col justify-center bg-slate-50 dark:bg-slate-600">
-    <div id="header" class="p-4 bg-slate-100 dark:bg-slate-700">
-      <a href="/">
-        <div class="flex items-center ml-2">
-          <img src="/icon.svg" alt="" width="48px" />
-          <h1 class="text-lg pl-2">制作场地调查边界文件</h1>
-        </div>
-      </a>
-    </div>
+    <NavBar />
     <div id="main" class="grow flex flex-col lg:flex-row">
       <div id="side" class="w-full lg:w-2/5 px-8 py-4 lg:py-8">
         <div class="mb-2 p-1 lg:p-4 border border-slate-300 rounded-md">
@@ -326,7 +318,7 @@ function create_shp() {
                     <n-input
                       size=""
                       v-model:value="input_values[item]"
-                      :maxlength="fields_length[item]"
+                      :maxlength="FIELD_LENGTH[item]"
                       show-count
                       type="text"
                       v-bind:placeholder="'请输入' + fileds_info[item]"
@@ -376,7 +368,7 @@ function create_shp() {
                     <n-input
                       size="medium"
                       v-model:value="input_values[item]"
-                      :maxlength="fields_length[item]"
+                      :maxlength="FIELD_LENGTH[item]"
                       show-count
                       type="text"
                       v-bind:placeholder="'请输入' + fileds_info[item]"
@@ -405,7 +397,7 @@ function create_shp() {
       <div id="map" class="px-8 py-4 lg:py-8 lg:pl-0 lg:pr-8 h-1/2 w-full lg:grow lg:h-auto"></div>
     </div>
 
-    <div id="footer" class="text-center font-mono text-sm"><p class="p-1">code with ❤️ by Liuxs</p></div>
+    <div id="footer" class="text-center font-mono text-sm hidden"><p class="p-1">code with ❤️ by Liuxs</p></div>
   </div>
 </template>
 
