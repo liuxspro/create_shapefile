@@ -351,10 +351,7 @@ function create_shp() {
         </n-button>
       </div>
     </div>
-    <div
-      id="map"
-      class="px-8 py-4 lg:py-8 lg:pl-0 lg:pr-8 h-1/2 w-full lg:grow lg:h-auto lg:min-h-[800px] min-h-[400px]"
-    ></div>
+    <div id="map" class="px-8 py-4 lg:py-8 lg:pl-0 lg:pr-8 w-full lg:h-auto lg:min-h-[800px] h-[400px]"></div>
   </div>
   <div id="footer" class="text-center font-mono text-sm hidden"><p class="p-1">code with ❤️ by Liuxs</p></div>
 </template>
