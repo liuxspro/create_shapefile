@@ -110,4 +110,4 @@ function create_dbf(fields) {
   return total;
 }
 
-export { create_dbf };
+export { create_dbf, FIELD_LENGTH };
