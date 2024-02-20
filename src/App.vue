@@ -1,26 +1,13 @@
 <script setup>
-import { computed } from "vue";
-import OLMap from "./components/Map.vue";
-import { useOsTheme, darkTheme, NConfigProvider } from "naive-ui";
-import { zhCN, dateZhCN } from "naive-ui";
-
-const osThemeRef = useOsTheme();
-const theme = computed(() => {
-  return osThemeRef.value === "dark" ? darkTheme : null;
-});
+import NavBar from "./components/NavBar.vue";
+import { RouterLink, RouterView } from "vue-router";
 </script>
 
 <template>
-  <n-config-provider :theme="theme" :locale="zhCN" :date-locale="dateZhCN">
-    <OLMap />
-  </n-config-provider>
+  <div id="container" class="h-screen flex flex-col bg-slate-50 dark:bg-slate-600">
+    <NavBar />
+    <RouterView />
+  </div>
 </template>
 
-<style scoped>
-.ol-zoom {
-  top: unset;
-  left: unset;
-  bottom: 0.5em;
-  right: 0.5em;
-}
-</style>
+<style scoped></style>

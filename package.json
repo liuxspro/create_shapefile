@@ -16,7 +16,8 @@
     "papaparse": "^5.4.1",
     "proj4": "^2.10.0",
     "round-to": "^6.0.0",
-    "vue": "^3.3.11"
+    "vue": "^3.3.11",
+    "vue-router": "4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.5.2",
