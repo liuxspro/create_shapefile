@@ -22,7 +22,7 @@ import Guide from "./index/Guide.vue";
             <span>要求.</span>
           </div>
           <div class="p-2">✨ 制作简单, 无需 GIS 软件, 一切都在浏览器中进行.</div>
-          <div class="p-2">✨ 纯浏览器处理, 不会上传到后台服务器, 无泄露隐私之忧.</div>
+          <div class="p-2">✨ 纯浏览器处理, 无后台服务器, 无泄露隐私之忧.</div>
         </div>
       </div>
       <div id="action" class="my-2">
