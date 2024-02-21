@@ -12,27 +12,7 @@ import proj4 from "proj4";
 
 import { create_dbf } from "../utils/dbfwrite";
 import { CGCS2000_3_Degree_CODE, CGCS2000_3_Degree_ERSI_WKT, get_zone } from "../utils/crs";
-
-const styles = {
-  MultiPolygon: new Style({
-    stroke: new Stroke({
-      color: "yellow",
-      width: 1,
-    }),
-    fill: new Fill({
-      color: "rgba(255, 255, 0, 0.1)",
-    }),
-  }),
-  Polygon: new Style({
-    stroke: new Stroke({
-      color: "red",
-      width: 3,
-    }),
-    fill: new Fill({
-      color: "rgba(0, 0, 255, 0.1)",
-    }),
-  }),
-};
+import { create_polygon_style } from "./ol";
 
 function clear_vector_layer(map) {
   // 获取所有图层
@@ -46,10 +26,6 @@ function clear_vector_layer(map) {
     }
   });
 }
-
-const styleFunction = function (feature) {
-  return styles[feature.getGeometry().getType()];
-};
 
 function create_geojson_from_points(points, properties = {}) {
   return {
@@ -103,13 +79,6 @@ function create_vector_layer_from_kml(kml_data) {
     dataProjection: "EPSG:4326", // 数据投影
     featureProjection: "EPSG:4326", // 地图投影
   });
-
-  //   const geom = kmlFeatures[0].getGeometry();
-  //   if (geom.getType() == "MultiPolygon") {
-  //     console.log("MultiPolygon", geom.getCoordinates());
-  //   }
-  //   console.log(geom.getCoordinates());
-
   // 创建矢量数据源
   const vectorSource = new VectorSource({
     features: kmlFeatures,
@@ -117,9 +86,8 @@ function create_vector_layer_from_kml(kml_data) {
   // 创建矢量图层
   const vectorLayer = new VectorLayer({
     source: vectorSource,
-    style: styleFunction,
+    style: create_polygon_style(),
   });
-
   return vectorLayer;
 }
 
@@ -137,7 +105,7 @@ function create_vector_layer_from_geojson(geojson_data, trans = true) {
 
   const vectorLayer = new VectorLayer({
     source: vectorSource,
-    style: styleFunction,
+    style: create_polygon_style(),
   });
   return vectorLayer;
 }

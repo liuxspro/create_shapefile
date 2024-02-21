@@ -5,6 +5,7 @@ import { Map, View } from "ol";
 import { northArrowControl, GoogleMap } from "../utils/ol";
 import TileLayer from "ol/layer/Tile";
 import { ScaleLine, Zoom } from "ol/control";
+import { create_text_style, create_polygon_style } from "../utils/ol";
 
 import {
   NButton,
@@ -56,8 +57,9 @@ const upload_file_data = ref({ uploaded: false, file: {} });
 
 let olmap;
 const map_rotate = ref(0); //地图旋转角度
-const input_values = ref({}); // 保存表单 input (字段)的值
+const input_values = ref({ DKDM: "" }); // 保存表单 input (字段)的值
 const upload_points = ref({ lon_lat_points: [], proj_points: [], WKT: "", DH: 0 }); // 保存点位信息
+const vec_layer = ref();
 
 // 旋转控件
 northArrowControl.element.addEventListener("click", () => {
@@ -98,6 +100,15 @@ onMounted(() => {
   create_ol_map();
 });
 
+function handleUpdateValue() {
+  const display_text = `${select_stage.value}${input_values.value.DKDM}`;
+  if (upload_file_data.value.uploaded) {
+    const ploygon_style = create_polygon_style();
+    ploygon_style.setText(create_text_style(display_text));
+    vec_layer.value.setStyle(ploygon_style);
+  }
+}
+
 async function handle_files() {
   const file_list = this.files;
   const file = file_list[0];
@@ -129,9 +140,10 @@ async function handle_files() {
   upload_points.value = parse_coordinates_list(points);
   input_values.value["DH"] = upload_points.value.DH; // 自动填入带号
   const upload_ploygon = create_geojson_from_points(upload_points.value.lon_lat_points);
-  const vec_layer = create_vector_layer_from_geojson(upload_ploygon, false);
-  olmap.addLayer(vec_layer);
-  olmap.getView().fit(vec_layer.getSource().getExtent());
+
+  vec_layer.value = create_vector_layer_from_geojson(upload_ploygon, false);
+  olmap.addLayer(vec_layer.value);
+  olmap.getView().fit(vec_layer.value.getSource().getExtent());
   upload_file_data.value.uploaded = true;
 }
 
@@ -159,67 +171,38 @@ function parse_timestamp(timestamp) {
 
 function correct_fields(fields) {
   // 验证字段
-  let DKMC = fields.DKMC;
-  // 检查变量 DKMC
-  if (DKMC === undefined || DKMC === "") {
-    alert("DKMC 为空");
+  const requiredFields = ["DKMC", "DKDM", "XZQMC", "XZQDM", "YDMJ"];
+
+  for (const field of requiredFields) {
+    if (fields[field] === undefined || fields[field] === "") {
+      alert(`${field} 为空`);
+      return;
+    }
+  }
+  if (!(25 <= fields.DH && fields.DH <= 45)) {
+    alert("带号范围应在25~45之间");
     return;
   }
 
-  let DKDM = fields.DKDM;
-  // 检查变量 DKDM
-  if (DKDM === undefined || DKDM === "") {
-    alert("DKDM 为空");
-    return;
-  }
-
-  let XZQMC = fields.XZQMC;
-  // 检查变量 XZQMC
-  if (XZQMC === undefined || XZQMC === "") {
-    alert("XZQMC 为空");
-    return;
-  }
-
-  let XZQDM = fields.XZQDM;
-  // 检查变量 XZQDM
-  if (XZQDM === undefined || XZQDM === "") {
-    alert("XZQDM 为空");
-    return;
-  }
-
-  let YDMJ = fields.YDMJ;
-  // 检查变量 YDMJ
-  if (YDMJ === undefined || YDMJ === "") {
-    alert("YDMJ 为空");
-    return;
-  }
-
-  let DH = fields.DH;
-  if (DH < 25 || DH > 45) {
-    alert("带号25~45");
-    return;
-  }
   // SCRQ SCDW BZ 不是必要项, 没有输入时设为为空字符串
-  let SCRQ = fields.SCRQ || "";
-  let SCDW = fields.SCDW || "";
-  let BZ = fields.BZ || "";
+  let { SCRQ = "", SCDW = "", BZ = "" } = fields;
   // 如果输入了SCRQ 将它从时间戳转为日期格式
   if (SCRQ != "") {
     SCRQ = parse_timestamp(SCRQ);
   }
   // 用地面积保留两位小数
   YDMJ = roundTo(fields.YDMJ, 2).toFixed(2);
+
   return { DKMC, DKDM, XZQMC, XZQDM, YDMJ, DH, SCRQ, SCDW, BZ };
 }
 
 function create_shp() {
-  const fields = correct_fields(input_values.value);
-  console.log(fields);
   const stage = select_stage.value || "初步调查";
   if (!upload_file_data.value.uploaded) {
     alert("请上传CSV文件");
     return;
   }
+  const fields = correct_fields(input_values.value);
   const points = upload_points.value.proj_points;
   if (fields) {
     generateAndDownloadZip(points, upload_points.value.WKT, stage, fields);
@@ -259,7 +242,12 @@ function create_shp() {
             <div class="mt-2">
               <n-form label-placement="left" :show-feedback="false">
                 <n-form-item label="调查阶段:" class="mb-3">
-                  <n-select v-model:value="select_stage" :options="stage_options" placeholder="选择调查阶段" />
+                  <n-select
+                    v-model:value="select_stage"
+                    :options="stage_options"
+                    placeholder="选择调查阶段"
+                    @update:value="handleUpdateValue"
+                  />
                 </n-form-item>
               </n-form>
             </div>
@@ -280,6 +268,7 @@ function create_shp() {
                     show-count
                     type="text"
                     v-bind:placeholder="'请输入' + fileds_info[item]"
+                    @input="handleUpdateValue"
                   />
                 </n-form-item>
               </n-form>
@@ -353,7 +342,6 @@ function create_shp() {
     </div>
     <div id="map" class="px-8 py-4 lg:py-8 lg:pl-0 lg:pr-8 w-full lg:h-auto lg:min-h-[800px] h-[400px]"></div>
   </div>
-  <div id="footer" class="text-center font-mono text-sm hidden"><p class="p-1">code with ❤️ by Liuxs</p></div>
 </template>
 
 <style scoped></style>

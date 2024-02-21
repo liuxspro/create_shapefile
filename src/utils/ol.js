@@ -1,6 +1,8 @@
 import Control from "ol/control/Control.js";
 import XYZ from "ol/source/XYZ.js";
+import { Fill, Stroke, Text, Style } from "ol/style.js";
 
+// 底图
 const GoogleMap = new XYZ({
   url: "https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&x={x}&y={y}&z={z}",
 });
@@ -20,4 +22,31 @@ function createNorthArrowElement() {
   return element;
 }
 
-export { GoogleMap, northArrowControl };
+function create_polygon_style() {
+  return new Style({
+    stroke: new Stroke({
+      color: "red",
+      width: 3,
+    }),
+    fill: new Fill({
+      color: "rgba(0, 0, 255, 0.1)",
+    }),
+  });
+}
+
+function create_text_style(text) {
+  return new Text({
+    font: "2em sans-serif",
+    text: text,
+    overflow: true,
+    fill: new Fill({
+      color: "rgba(0, 0, 0, 1)",
+    }),
+    stroke: new Stroke({
+      color: "white",
+      width: 4,
+    }),
+  });
+}
+
+export { GoogleMap, northArrowControl, create_text_style, create_polygon_style };
