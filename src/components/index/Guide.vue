@@ -1,16 +1,16 @@
 <template>
-  <div id="guide" class="px-8 pt-8">
+  <div id="guide" class="px-8 pt-1">
     <h2 class="text-xl mt-2 font-semibold">使用说明:</h2>
     <div>
       <h3>1. 上传地块坐标</h3>
       <h4 class="pl-2 border-l-4 border-slate-300 my-1">CSV 文件格式</h4>
-      <div class="flex flex-row justify-stretch">
+      <div class="flex flex-col justify-stretch lg:flex-row">
         <div class="w-full">
           <div class="text-xs">
             <p>经纬度坐标</p>
-            <p>经纬度格式按照: 拐点编号、经度、纬度的顺序排列.</p>
+            <p>按照: 拐点编号、经度、纬度的顺序排列.</p>
           </div>
-          <div class="font-mono text-xs border p-2 rounded-md mr-2">
+          <div class="font-mono text-xs border p-2 rounded-md mr-2 dark:border-gray-500">
             <pre class="whitespace-pre-line">
                 <code>编号,经度,纬度</code>
                 <code>1,117.513070,34.307738</code>
@@ -27,7 +27,7 @@
             <p>投影坐标</p>
             <p>按照: 编号，X（北坐标），Y（东坐标，含带号）的顺序排列.</p>
           </div>
-          <div class="font-mono text-xs border p-2 rounded-md">
+          <div class="font-mono text-xs border p-2 rounded-md dark:border-gray-500">
             <pre class="whitespace-pre-line">
                 <code>编号,X,Y</code>
                 <code>1,3797916.479,39547228.491</code>
@@ -51,7 +51,7 @@
             <span>选择调查阶段:</span> <code class="field_name">初步调查</code>
             <code class="field_name">详细调查</code>
           </div>
-          <div class="my-2 leading-7">
+          <div class="my-2 leading-8">
             <span>必填字段:</span>
             <code class="field_name">地块名称</code> <code class="field_name">地块代码</code>
             <code class="field_name">行政区代码</code><code class="field_name">行政区名称</code>
@@ -74,8 +74,8 @@
             <span> , 即可下载边界文件.</span>
           </p>
           <p class="mb-4">边界文件已根据所处阶段和地块编码自动命名, 并打包为📦ZIP, 可直接上传至系统.</p>
-          <img src="/生成文件示意图.svg" alt="" srcset="" width="80%" />
-          <p class="mb-8"></p>
+          <img src="/生成文件示意图.svg" alt="" srcset="" width="80%" class="my-0 mx-auto" />
+          <p class="mb-4"></p>
         </div>
       </div>
     </div>
@@ -83,10 +83,10 @@
 </template>
 <style scoped>
 h3 {
-  @apply font-semibold text-lg my-4;
+  @apply font-semibold text-lg mt-4 text-gray-900 dark:text-gray-300;
 }
 
 code.field_name {
-  @apply p-1 border bg-slate-200 rounded-md m-1 dark:bg-slate-500 dark:border-slate-400;
+  @apply p-1 border bg-gray-200 rounded-md m-1 dark:bg-slate-500 dark:border-slate-400 font-sans;
 }
 </style>
