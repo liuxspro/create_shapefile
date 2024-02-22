@@ -171,27 +171,28 @@ function parse_timestamp(timestamp) {
 
 function correct_fields(fields) {
   // 验证字段
-  const requiredFields = ["DKMC", "DKDM", "XZQMC", "XZQDM", "YDMJ"];
+  let { DKMC, DKDM, XZQDM, XZQMC, YDMJ, DH, SCRQ = "", SCDW = "", BZ = "" } = fields;
+  const requiredFields = { DKMC, DKDM, XZQDM, XZQMC, YDMJ, DH };
+  console.log(requiredFields);
 
-  for (const field of requiredFields) {
-    if (fields[field] === undefined || fields[field] === "") {
+  for (const field of Object.keys(requiredFields)) {
+    console.log(requiredFields[field]);
+    if (requiredFields[field] === undefined || requiredFields[field] === "") {
       alert(`${field} 为空`);
       return;
     }
   }
-  if (!(25 <= fields.DH && fields.DH <= 45)) {
+  if (!(25 <= DH && DH <= 45)) {
     alert("带号范围应在25~45之间");
     return;
   }
 
-  // SCRQ SCDW BZ 不是必要项, 没有输入时设为为空字符串
-  let { SCRQ = "", SCDW = "", BZ = "" } = fields;
   // 如果输入了SCRQ 将它从时间戳转为日期格式
   if (SCRQ != "") {
     SCRQ = parse_timestamp(SCRQ);
   }
   // 用地面积保留两位小数
-  YDMJ = roundTo(fields.YDMJ, 2).toFixed(2);
+  YDMJ = roundTo(YDMJ, 2).toFixed(2);
 
   return { DKMC, DKDM, XZQMC, XZQDM, YDMJ, DH, SCRQ, SCDW, BZ };
 }
@@ -329,7 +330,7 @@ function create_shp() {
         </n-collapse>
       </div>
       <div class="mb-2 p-1 lg:p-4 border border-slate-300 rounded-md">
-        <n-button quaternary type="success" class="w-full" @click="create_shp">
+        <n-button quaternary type="success" class="w-full" @click="create_shp" :disabled="!upload_file_data.uploaded">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 256 256">
             <path
               fill="currentColor"
