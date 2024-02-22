@@ -103,7 +103,6 @@ function concatenate(resultConstructor, ...arrays) {
 }
 
 function create_dbf(fields) {
-  console.log("create_dbf", fields);
   const array_list = generate_fields_array(fields);
   const arrays = concatenate(Uint8Array, ...array_list);
   const total = concatenate(Uint8Array, ...[header_data, RECORD_FLAG, arrays, EOF]);
