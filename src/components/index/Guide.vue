@@ -87,6 +87,6 @@ h3 {
 }
 
 code.field_name {
-  @apply p-1 border bg-gray-200 rounded-md m-1 dark:bg-slate-500 dark:border-slate-400 font-sans;
+  @apply p-1 border bg-gray-200 rounded-md m-1 dark:bg-slate-500 dark:border-slate-400 font-sans whitespace-nowrap;
 }
 </style>
