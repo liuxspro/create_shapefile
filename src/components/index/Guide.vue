@@ -74,7 +74,7 @@
             <span> , 即可下载边界文件.</span>
           </p>
           <p class="mb-4">边界文件已根据所处阶段和地块编码自动命名, 并打包为📦ZIP, 可直接上传至系统.</p>
-          <img src="/生成文件示意图.svg" alt="" srcset="" width="80%" class="my-0 mx-auto" />
+          <img src="@/assets/生成文件示意图.svg" alt="" srcset="" width="80%" class="my-0 mx-auto" />
           <p class="mb-4"></p>
         </div>
       </div>
@@ -87,6 +87,6 @@ h3 {
 }
 
 code.field_name {
-  @apply p-1 border bg-gray-200 rounded-md m-1 dark:bg-slate-500 dark:border-slate-400 font-sans;
+  @apply p-1 border bg-gray-200 rounded-md m-1 dark:bg-slate-500 dark:border-slate-400 font-sans whitespace-nowrap;
 }
 </style>

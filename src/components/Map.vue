@@ -173,10 +173,8 @@ function correct_fields(fields) {
   // 验证字段
   let { DKMC, DKDM, XZQDM, XZQMC, YDMJ, DH, SCRQ = "", SCDW = "", BZ = "" } = fields;
   const requiredFields = { DKMC, DKDM, XZQDM, XZQMC, YDMJ, DH };
-  console.log(requiredFields);
 
   for (const field of Object.keys(requiredFields)) {
-    console.log(requiredFields[field]);
     if (requiredFields[field] === undefined || requiredFields[field] === "") {
       alert(`${field} 为空`);
       return;
@@ -213,7 +211,7 @@ function create_shp() {
 
 <template>
   <div id="main" class="grow flex flex-col lg:flex-row h-full">
-    <div id="side" class="w-full lg:w-2/5 px-8 py-4 lg:py-8">
+    <div id="side" class="w-full lg:w-5/12 px-8 py-4 lg:py-8">
       <div class="mb-2 p-1 lg:p-4 border border-slate-300 rounded-md">
         <n-button quaternary @click="load_file" class="w-full text-left">
           <template #icon>

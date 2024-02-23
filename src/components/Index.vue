@@ -7,7 +7,7 @@ import Guide from "./index/Guide.vue";
   <div id="main" class="flex flex-col lg:flex-row items-center h-full lg:justify-around">
     <div id="intro" class="p-8 mr-4 flex flex-col items-center print:hidden h-full">
       <div class="w-32 mx-auto my-0">
-        <img src="/icon.svg" alt="" width="100%" />
+        <img src="@/assets/icon.svg" alt="" width="100%" />
       </div>
       <div class="mt-4 text-2xl text-center mb-8">
         <p>制作地块边界文件</p>
