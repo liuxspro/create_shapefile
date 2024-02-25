@@ -2,10 +2,9 @@
 import { ref, onMounted } from "vue";
 
 import { Map, View } from "ol";
-import { northArrowControl, GoogleMap } from "../utils/ol";
 import TileLayer from "ol/layer/Tile";
 import { ScaleLine, Zoom } from "ol/control";
-import { create_text_style, create_polygon_style } from "../utils/ol";
+import { GoogleMap, create_text_style, create_polygon_style, NorthArrow } from "../utils/ol";
 
 import {
   NButton,
@@ -61,15 +60,6 @@ const input_values = ref({ DKDM: "" }); // 保存表单 input (字段)的值
 const upload_points = ref({ lon_lat_points: [], proj_points: [], WKT: "", DH: 0 }); // 保存点位信息
 const vec_layer = ref();
 
-// 旋转控件
-northArrowControl.element.addEventListener("click", () => {
-  olmap.getView().setRotation(0);
-});
-
-function rotateControl(rotation) {
-  var controlElement = northArrowControl.element;
-  controlElement.style.transform = "rotate(" + rotation + "rad)";
-}
 function create_ol_map() {
   olmap = new Map({
     target: "map",
@@ -84,15 +74,7 @@ function create_ol_map() {
       constrainResolution: true, // 将 resolution 约束为最接近的整数值
       projection: "EPSG:4326", // 4326 地图会变形
     }),
-    controls: [new ScaleLine({ units: "metric" }), new Zoom()],
-  });
-  olmap.addControl(northArrowControl);
-  // 监听地图视图变化事件
-  olmap.getView().on("change:rotation", function (event) {
-    // 获取视图的旋转角度
-    map_rotate.value = event.target.getRotation();
-    // 旋转指北针
-    rotateControl(map_rotate.value);
+    controls: [new ScaleLine({ units: "metric" }), new Zoom(), new NorthArrow()],
   });
 }
 
@@ -339,6 +321,7 @@ function create_shp() {
         </n-button>
       </div>
     </div>
+
     <div id="map" class="px-8 py-4 lg:py-8 lg:pl-0 lg:pr-8 w-full lg:h-auto lg:min-h-[800px] h-[400px]"></div>
   </div>
 </template>
