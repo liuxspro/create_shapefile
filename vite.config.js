@@ -18,7 +18,7 @@ export default defineConfig({
         name: "制作地块边界文件",
         short_name: "制作地块边界文件",
         description: "制作地块边界文件",
-        theme_color: "#84BD5A",
+        theme_color: "#E2E8F0",
         start_url: "/",
         display: "standalone",
         id: "liuxspro.createshapefile",
