@@ -32,7 +32,15 @@ import Guide from "./index/Guide.vue";
       </div>
       <div class="py-12 text-center font-mono text-sm">
         <p class="p-1">code with ❤️ by Liuxspro</p>
-        <div></div>
+        <div class="flex justify-center items-center pt-2 mb-8">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
+            <path
+              fill="currentColor"
+              d="m20 8l-8 5l-8-5V6l8 5l8-5m0-2H4c-1.11 0-2 .89-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2"
+            />
+          </svg>
+          <a href="mailto:liuxspro@gmail.com" class="ml-1">Contact Me</a>
+        </div>
       </div>
     </div>
     <Guide />
