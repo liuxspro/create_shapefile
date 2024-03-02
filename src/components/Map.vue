@@ -17,6 +17,8 @@ import {
   NForm,
   NFormItem,
 } from "naive-ui";
+import { useDialog } from "naive-ui";
+const dialog = useDialog();
 
 import Papa from "papaparse";
 import { roundTo } from "round-to";
@@ -112,10 +114,21 @@ async function handle_files() {
     points = get_points_from_kml(kmlData);
     if (points.length <= 2) {
       upload_file_data.value.uploaded = false;
+      dialog.error({
+        title: "错误",
+        content: "至少需要3个点",
+        positiveText: "确定",
+        maskClosable: false,
+      });
       throw new Error("至少需要3个点");
     }
   } else {
-    alert("不支持的文件类型");
+    dialog.error({
+      title: "错误",
+      content: "不支持的文件类型",
+      positiveText: "确定",
+      maskClosable: false,
+    });
     upload_file_data.value.uploaded = false;
     return;
   }
@@ -158,7 +171,7 @@ function correct_fields(fields) {
 
   for (const field of Object.keys(requiredFields)) {
     if (requiredFields[field] === undefined || requiredFields[field] === "") {
-      alert(`${field} 为空`);
+      dialog.error({ title: "错误", content: `${field} 为空`, positiveText: "确定", maskClosable: false });
       return;
     }
   }
@@ -179,10 +192,10 @@ function correct_fields(fields) {
 
 function create_shp() {
   const stage = select_stage.value || "初步调查";
-  if (!upload_file_data.value.uploaded) {
-    alert("请上传CSV文件");
-    return;
-  }
+  // if (!upload_file_data.value.uploaded) {
+  //   dialog.error({ title: "错误", content: "请上传CSV文件", positiveText: "确定", maskClosable: false });
+  //   return;
+  // }
   const fields = correct_fields(input_values.value);
   const points = upload_points.value.proj_points;
   if (fields) {
