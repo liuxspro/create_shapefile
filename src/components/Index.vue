@@ -32,7 +32,7 @@ import Guide from "./index/Guide.vue";
       </div>
       <div class="py-12 text-center font-mono text-sm">
         <p class="p-1">code with ❤️ by Liuxspro</p>
-        <div class="flex justify-center items-center pt-2 mb-8">
+        <div class="flex justify-center items-center pt-2 mb-1">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
             <path
               fill="currentColor"
@@ -41,6 +41,9 @@ import Guide from "./index/Guide.vue";
           </svg>
           <a href="mailto:liuxspro@gmail.com" class="ml-1">Contact Me</a>
         </div>
+        <p>
+          <span>Commit: {{ "__COMMIT__".slice(0, 7) }}</span>
+        </p>
       </div>
     </div>
     <Guide />
