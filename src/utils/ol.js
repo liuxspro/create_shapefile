@@ -74,4 +74,4 @@ class NorthArrow extends Control {
   }
 }
 
-export { NorthArrow, GoogleMap, create_text_style, create_polygon_style };
+export { NorthArrow, GoogleMap, EsriMap, create_text_style, create_polygon_style };
