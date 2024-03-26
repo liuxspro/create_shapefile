@@ -7,6 +7,10 @@ const GoogleMap = new XYZ({
   url: "https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&x={x}&y={y}&z={z}",
 });
 
+const EsriMap = new XYZ({
+  url: "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+})
+
 function create_polygon_style() {
   return new Style({
     stroke: new Stroke({
@@ -70,4 +74,4 @@ class NorthArrow extends Control {
   }
 }
 
-export { NorthArrow, GoogleMap, create_text_style, create_polygon_style };
+export { NorthArrow, GoogleMap, EsriMap, create_text_style, create_polygon_style };
