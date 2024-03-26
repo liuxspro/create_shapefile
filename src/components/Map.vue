@@ -4,7 +4,7 @@ import { ref, onMounted } from "vue";
 import { Map, View } from "ol";
 import TileLayer from "ol/layer/Tile";
 import { ScaleLine, Zoom } from "ol/control";
-import { GoogleMap, create_text_style, create_polygon_style, NorthArrow } from "../utils/ol";
+import { EsriMap, create_text_style, create_polygon_style, NorthArrow } from "../utils/ol";
 
 import {
   NButton,
@@ -67,7 +67,7 @@ function create_ol_map() {
     target: "map",
     layers: [
       new TileLayer({
-        source: GoogleMap,
+        source: EsriMap,
       }),
     ],
     view: new View({
