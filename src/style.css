@@ -1,4 +1,5 @@
 @import "ol/ol.css";
+@import "ol-layerswitcher/dist/ol-layerswitcher.css";
 /* @tailwind base; */
 @layer {
   @tailwind base;
@@ -15,10 +16,24 @@ body {
 .ol-zoom {
   top: unset;
   left: unset;
-  bottom: 0.5em;
+  bottom: 3em;
   right: 0.5em;
 }
 
 .ol-viewport {
   border-radius: 0.6em;
+}
+
+.layer-switcher {
+  top: unset;
+  left: unset;
+  bottom: 0.5em;
+  right: 0.5em;
+}
+
+.layer-switcher button {
+  width: 1.4em;
+  height: 1.4em;
+  background-position: center;
+  background-size: cover;
 }

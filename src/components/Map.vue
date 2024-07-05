@@ -2,9 +2,17 @@
 import { ref, onMounted } from "vue";
 
 import { Map, View } from "ol";
-import TileLayer from "ol/layer/Tile";
+
 import { ScaleLine, Zoom } from "ol/control";
-import { EsriMap, create_text_style, create_polygon_style, NorthArrow } from "../utils/ol";
+import { baseMaps, create_text_style, create_polygon_style, NorthArrow } from "../utils/ol";
+import LayerSwitcher from "ol-layerswitcher";
+
+// https://github.com/walkermatt/ol-layerswitcher
+const layerSwitcher = new LayerSwitcher({
+  activationMode: "click",
+  reverse: true,
+  groupSelectStyle: "children",
+});
 
 import {
   NButton,
@@ -65,11 +73,7 @@ const vec_layer = ref();
 function create_ol_map() {
   olmap = new Map({
     target: "map",
-    layers: [
-      new TileLayer({
-        source: EsriMap,
-      }),
-    ],
+    layers: [baseMaps],
     view: new View({
       center: [114.512937, 34.306549],
       zoom: 5,
@@ -78,6 +82,7 @@ function create_ol_map() {
     }),
     controls: [new ScaleLine({ units: "metric" }), new Zoom(), new NorthArrow()],
   });
+  olmap.addControl(layerSwitcher);
 }
 
 onMounted(() => {
