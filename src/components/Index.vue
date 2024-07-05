@@ -10,7 +10,7 @@ import Guide from "./index/Guide.vue";
         <img src="@/assets/icon.svg" alt="" width="100%" />
       </div>
       <div class="mt-4 text-2xl text-center mb-8">
-        <p>制作地块边界文件</p>
+        <p>地块边界文件制作</p>
       </div>
       <div id="features">
         <div class="">
