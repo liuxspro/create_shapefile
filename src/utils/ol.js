@@ -1,15 +1,44 @@
 import Control from "ol/control/Control.js";
 import XYZ from "ol/source/XYZ.js";
+import TileLayer from "ol/layer/Tile";
 import { Fill, Stroke, Text, Style } from "ol/style.js";
+import SourceOSM from "ol/source/OSM";
+import LayerGroup from "ol/layer/Group";
 
 // 底图
 const GoogleMap = new XYZ({
-  url: "https://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&x={x}&y={y}&z={z}",
+  url: "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
 });
 
 const EsriMap = new XYZ({
-  url: "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-})
+  url: "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+});
+
+const OSM = new TileLayer({
+  title: "OSM",
+  type: "base",
+  visible: false,
+  source: new SourceOSM(),
+});
+
+const Google = new TileLayer({
+  title: "Google Map",
+  type: "base",
+  visible: false,
+  source: GoogleMap,
+});
+
+const Esri = new TileLayer({
+  title: "Esri Map",
+  type: "base",
+  visible: true,
+  source: EsriMap,
+});
+
+const baseMaps = new LayerGroup({
+  title: "底图",
+  layers: [OSM, Google, Esri],
+});
 
 function create_polygon_style() {
   return new Style({
@@ -74,4 +103,4 @@ class NorthArrow extends Control {
   }
 }
 
-export { NorthArrow, GoogleMap, EsriMap, create_text_style, create_polygon_style };
+export { NorthArrow, baseMaps, create_text_style, create_polygon_style };
