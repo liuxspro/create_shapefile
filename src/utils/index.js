@@ -2,7 +2,6 @@ import GeoJSON from "ol/format/GeoJSON.js";
 import { Vector as VectorSource } from "ol/source";
 import { Vector as VectorLayer } from "ol/layer";
 import { transform } from "ol/proj";
-import { Fill, Stroke, Style, Text } from "ol/style.js";
 import KML from "ol/format/KML.js";
 
 import * as shpwrite from "@mapbox/shp-write";
@@ -11,8 +10,13 @@ import { saveAs } from "file-saver";
 import proj4 from "proj4";
 
 import { create_dbf } from "../utils/dbfwrite";
-import { CGCS2000_3_Degree_CODE, CGCS2000_3_Degree_ERSI_WKT, get_zone } from "../utils/crs";
+import {
+  CGCS2000_3_Degree_CODE,
+  CGCS2000_3_Degree_ERSI_WKT,
+  get_zone,
+} from "../utils/crs";
 import { create_polygon_style } from "./ol";
+import { get_digits } from "@liuxspro/utils";
 
 function clear_vector_layer(map) {
   // 获取所有图层
@@ -59,7 +63,9 @@ function get_points_from_kml(kml_data) {
   } else if (gemo_type == "LineString") {
     coord_list = geom.getCoordinates();
   } else if (gemo_type == "Point") {
-    coord_list = kmlFeatures.map((features) => features.getGeometry().getCoordinates());
+    coord_list = kmlFeatures.map((features) =>
+      features.getGeometry().getCoordinates()
+    );
     console.log(kmlFeatures, coord_list);
   } else {
     throw new Error("不支持的kml要素");
@@ -95,7 +101,9 @@ function create_vector_layer_from_geojson(geojson_data, trans = true) {
   if (trans) {
     // 将坐标从 EPSG:4326 转换为 EPSG:3857
     geojson_data.features.forEach((feature) => {
-      const coordinates = feature.geometry.coordinates[0].map((coord) => transform(coord, "EPSG:4326", "EPSG:3857"));
+      const coordinates = feature.geometry.coordinates[0].map((coord) =>
+        transform(coord, "EPSG:4326", "EPSG:3857")
+      );
       feature.geometry.coordinates[0] = coordinates;
     });
   }
@@ -124,15 +132,12 @@ function generateAndDownloadZip(points_data, WKT, select_stage, fields) {
     zip_target.file(`${filename}.dbf`, dbf_data.buffer);
     zip_target.file(`${filename}.cpg`, "UTF-8");
     zip_target.file(`${filename}.prj`, WKT);
-    zip.generateAsync({ type: "blob", compression: "DEFLATE" }).then(function (content) {
-      saveAs(content, `${filename}.zip`);
-    });
+    zip
+      .generateAsync({ type: "blob", compression: "DEFLATE" })
+      .then(function (content) {
+        saveAs(content, `${filename}.zip`);
+      });
   });
-}
-
-function get_digits(n) {
-  const integerPart = Math.floor(Math.abs(n)); // 取绝对值并向下取整
-  return integerPart.toString().length;
 }
 
 function correct_points_order(points) {
