@@ -47,6 +47,17 @@ function create_geojson_from_points(points, properties = {}) {
   };
 }
 
+async function get_kmldata_from_kmz(buffer) {
+  const zip = new JSZip();
+  let kmlData;
+  await zip.loadAsync(buffer);
+  const kmlFile = zip.file(/\.kml$/i)[0];
+  if (kmlFile) {
+    kmlData = await kmlFile.async("string");
+  }
+  return kmlData;
+}
+
 function get_points_from_kml(kml_data) {
   const kmlFormat = new KML();
   const kmlFeatures = kmlFormat.readFeatures(kml_data, {
@@ -274,4 +285,5 @@ export {
   get_points_from_kml,
   parse_coordinates_list,
   get_points_from_csv,
+  get_kmldata_from_kmz,
 };

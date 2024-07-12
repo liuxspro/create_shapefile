@@ -39,6 +39,7 @@ import {
   clear_vector_layer,
   get_points_from_kml,
   parse_coordinates_list,
+  get_kmldata_from_kmz
 } from "../utils";
 
 import { FIELD_LENGTH } from "../utils/dbfwrite";
@@ -127,6 +128,22 @@ async function handle_files() {
       });
       throw new Error("至少需要3个点");
     }
+  } else if (file_type == 'kmz') {
+    // https://developer.mozilla.org/zh-CN/docs/Web/API/File
+    const kmzData = await file.arrayBuffer();
+    const kml_data = await get_kmldata_from_kmz(kmzData)
+    points = get_points_from_kml(kml_data);
+    if (points.length <= 2) {
+      upload_file_data.value.uploaded = false;
+      dialog.error({
+        title: "错误",
+        content: "至少需要3个点",
+        positiveText: "确定",
+        maskClosable: false,
+      });
+      throw new Error("至少需要3个点");
+    }
+
   } else {
     dialog.error({
       title: "错误",
@@ -140,7 +157,6 @@ async function handle_files() {
   upload_points.value = parse_coordinates_list(points);
   input_values.value["DH"] = upload_points.value.DH; // 自动填入带号
   const upload_ploygon = create_geojson_from_points(upload_points.value.lon_lat_points);
-  // const result = centroid(upload_ploygon);
   const center = centerOfMass(upload_ploygon).geometry.coordinates
 
   // console.log(result)
@@ -157,7 +173,7 @@ function load_file() {
   upload_file_data.value.uploaded = false;
   const input = document.createElement("input");
   input.type = "file";
-  input.accept = ".csv, .kml";
+  input.accept = ".csv, .kml, .kmz";
   input.addEventListener("change", handle_files);
   input.click();
 }
@@ -202,10 +218,6 @@ function correct_fields(fields) {
 
 function create_shp() {
   const stage = select_stage.value || "初步调查";
-  // if (!upload_file_data.value.uploaded) {
-  //   dialog.error({ title: "错误", content: "请上传CSV文件", positiveText: "确定", maskClosable: false });
-  //   return;
-  // }
   const fields = correct_fields(input_values.value);
   const points = upload_points.value.proj_points;
   if (fields) {
@@ -228,7 +240,7 @@ function create_shp() {
               </g>
             </svg>
           </template>
-          <p class="dark:text-slate-200">加载 CSV / KML 文件</p>
+          <p class="dark:text-slate-200">加载 CSV / KML / KMZ 文件</p>
         </n-button>
       </div>
       <div class="mb-2 p-4 lg:p-4 border border-slate-300 rounded-md" v-if="upload_file_data.uploaded">
