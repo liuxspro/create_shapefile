@@ -10,13 +10,13 @@ import { saveAs } from "file-saver";
 import proj4 from "proj4";
 
 import { create_dbf } from "../utils/dbfwrite";
-import {
-  CGCS2000_3_Degree_CODE,
-  CGCS2000_3_Degree_ERSI_WKT,
-  get_zone,
-} from "../utils/crs";
 import { create_polygon_style } from "./ol";
-import { get_digits } from "@liuxspro/utils";
+import { get_digits, getEsriWKT_3_Degree } from "@liuxspro/utils";
+
+// 根据经度获取带号
+function get_zone(longitude) {
+  return Math.round(longitude / 3);
+}
 
 function clear_vector_layer(map) {
   // 获取所有图层
@@ -228,8 +228,7 @@ function parse_coordinates_list(coordinates_list) {
     if (get_digits(y) == 8) {
       //含带号的坐标
       DH = parseInt(y.toString().slice(0, 2));
-      const EPSG_CODE = CGCS2000_3_Degree_CODE[DH];
-      WKT = CGCS2000_3_Degree_ERSI_WKT[EPSG_CODE];
+      WKT = getEsriWKT_3_Degree(DH);
       proj_points = coordinates_list.map((p) => {
         // 满足 GIS 坐标系定义, 交换 X Y 位置
         return [p[1], p[0]];
@@ -248,8 +247,7 @@ function parse_coordinates_list(coordinates_list) {
       return [p[0], p[1]];
     });
     DH = get_zone(x);
-    const EPSG_CODE = CGCS2000_3_Degree_CODE[DH];
-    WKT = CGCS2000_3_Degree_ERSI_WKT[EPSG_CODE];
+    WKT = getEsriWKT_3_Degree(DH);
     proj_points = coordinates_list.map((p) => {
       // 从经纬度转为投影坐标
       // 经过 proj4 转化的坐标 X Y 属性是满足 GIS 要求的,不需要交换位置了

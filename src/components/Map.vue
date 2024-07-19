@@ -29,7 +29,7 @@ import { useDialog } from "naive-ui";
 const dialog = useDialog();
 
 import Papa from "papaparse";
-import { roundTo } from "round-to";
+import { round } from "es-toolkit";
 
 import {
   create_geojson_from_points,
@@ -57,7 +57,7 @@ const fileds_info = {
   XZQDM: "行政区代码",
   XZQMC: "行政区名称",
   YDMJ: "地块面积",
-  DH: "带号 ",
+  DH: "带号",
   SCRQ: "生产日期",
   SCDW: "生产单位",
   BZ: "备注",
@@ -66,7 +66,6 @@ const fileds_info = {
 const upload_file_data = ref({ uploaded: false, file: {}, center: [0, 0] });
 
 let olmap;
-// const map_rotate = ref(0); //地图旋转角度
 const input_values = ref({ DKDM: "" }); // 保存表单 input (字段)的值
 const upload_points = ref({ lon_lat_points: [], proj_points: [], WKT: "", DH: 0 }); // 保存点位信息
 const vec_layer = ref();
@@ -159,8 +158,6 @@ async function handle_files() {
   const upload_ploygon = create_geojson_from_points(upload_points.value.lon_lat_points);
   const center = centerOfMass(upload_ploygon).geometry.coordinates
 
-  // console.log(result)
-  // console.log()
   vec_layer.value = create_vector_layer_from_geojson(upload_ploygon, false);
   olmap.addLayer(vec_layer.value);
   olmap.getView().fit(vec_layer.value.getSource().getExtent());
@@ -211,7 +208,7 @@ function correct_fields(fields) {
     SCRQ = parse_timestamp(SCRQ);
   }
   // 用地面积保留两位小数
-  YDMJ = roundTo(YDMJ, 2).toFixed(2);
+  YDMJ = round(YDMJ, 2).toFixed(2);
 
   return { DKMC, DKDM, XZQMC, XZQDM, YDMJ, DH, SCRQ, SCDW, BZ };
 }
