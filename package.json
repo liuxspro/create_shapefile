@@ -4,11 +4,12 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host",
+    "dev": "vite --host --port 5656",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@liuxspro/ol-north-arrow": "^0.1.1",
     "@liuxspro/utils": "npm:@jsr/liuxspro__utils@^0.1.4",
     "@mapbox/shp-write": "^0.4.3",
     "@turf/center-of-mass": "^7.0.0",
