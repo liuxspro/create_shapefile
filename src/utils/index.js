@@ -66,20 +66,19 @@ function get_points_from_kml(kml_data) {
   });
   const geom = kmlFeatures[0].getGeometry();
   const gemo_type = geom.getType();
+  // console.log(gemo_type, geom.getCoordinates());
   let coord_list;
+  if (["Polygon", "MultiLineString"].includes(gemo_type)) {
+    coord_list = geom.getCoordinates()[0];
+  }
+  if (gemo_type == "LineString") {
+    coord_list = geom.getCoordinates();
+  }
+  if (gemo_type == "Point") {
+    coord_list = kmlFeatures.map((g) => g.getGeometry().getCoordinates());
+  }
   if (gemo_type == "MultiPolygon") {
     coord_list = geom.getCoordinates()[0][0];
-  } else if (gemo_type == "Polygon") {
-    coord_list = geom.getCoordinates()[0];
-  } else if (gemo_type == "LineString") {
-    coord_list = geom.getCoordinates();
-  } else if (gemo_type == "Point") {
-    coord_list = kmlFeatures.map((features) =>
-      features.getGeometry().getCoordinates()
-    );
-    console.log(kmlFeatures, coord_list);
-  } else {
-    throw new Error("不支持的kml要素");
   }
   return coord_list;
 }
@@ -89,7 +88,6 @@ function get_points_from_csv(csv_data) {
   return points;
 }
 function create_vector_layer_from_kml(kml_data) {
-  // TODO 处理kml为点图层的情况
   const kmlFormat = new KML();
   // 通过 KML 格式对象解析数据
   const kmlFeatures = kmlFormat.readFeatures(kml_data, {
