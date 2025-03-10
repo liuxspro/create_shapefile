@@ -1,6 +1,7 @@
 <script setup>
 import { RouterLink } from "vue-router";
 import Guide from "./index/Guide.vue";
+import { NPopover } from "naive-ui"
 </script>
 
 <template>
@@ -32,6 +33,12 @@ import Guide from "./index/Guide.vue";
       </div>
       <div class="py-12 text-center font-mono text-sm">
         <p class="p-1">code with ❤️ by Liuxspro</p>
+        <n-popover trigger="hover">
+          <template #trigger>
+            <p class="p-1 text-blue-600 font-semibold">Buy Me A Coffee ☕</p>
+          </template>
+          <img src="@/assets/zs.jpg" width="400px" />
+        </n-popover>
         <div class="flex justify-center items-center pt-2 mb-1">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
             <path fill="currentColor"
