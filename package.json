@@ -10,28 +10,28 @@
   },
   "dependencies": {
     "@liuxspro/ol-north-arrow": "^0.1.1",
-    "@liuxspro/utils": "npm:@jsr/liuxspro__utils@^0.1.7",
+    "@liuxspro/utils": "npm:@jsr/liuxspro__utils@^0.1.8",
     "@mapbox/shp-write": "^0.4.3",
     "@turf/center-of-mass": "^7.2.0",
-    "es-toolkit": "^1.31.0",
+    "es-toolkit": "^1.39.6",
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
-    "ol": "^10.3.1",
+    "ol": "^10.6.1",
     "ol-layerswitcher": "^4.1.2",
-    "papaparse": "^5.4.1",
-    "proj4": "^2.15.0",
-    "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "papaparse": "^5.5.3",
+    "proj4": "^2.19.5",
+    "vue": "^3.5.17",
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
     "@rollup/plugin-replace": "^5.0.7",
     "@vitejs/plugin-vue": "^4.6.2",
-    "autoprefixer": "^10.4.20",
-    "daisyui": "^4.12.23",
-    "naive-ui": "^2.41.0",
-    "postcss": "^8.4.49",
+    "autoprefixer": "^10.4.21",
+    "daisyui": "^4.12.24",
+    "naive-ui": "^2.42.0",
+    "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
-    "vite": "^5.4.11",
+    "vite": "^5.4.19",
     "vite-plugin-pwa": "^0.19.8"
   }
 }
