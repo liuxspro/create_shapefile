@@ -37,7 +37,7 @@ import { NPopover } from "naive-ui"
           <template #trigger>
             <p class="p-1 text-blue-600 font-semibold">Buy Me A Coffee ☕</p>
           </template>
-          <img src="@/assets/zs.jpg" width="400px" />
+          <img src="@/assets/zs.webp" width="400px" />
         </n-popover>
         <div class="flex justify-center items-center pt-2 mb-1">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
