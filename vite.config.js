@@ -36,6 +36,16 @@ export default defineConfig({
             type: "image/png",
           },
         ],
+        screenshots: [{
+          src: "screenshot.png",
+          sizes: "1200x600",
+          type: "image/png",
+          form_factor: "wide",
+        }, {
+          src: "screenshot.png",
+          sizes: "1200x600",
+          type: "image/png",
+        }],
       },
       devOptions: {
         enabled: true,
