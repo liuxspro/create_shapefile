@@ -85,6 +85,15 @@ function get_points_from_kml(kml_data) {
 
 function get_points_from_csv(csv_data) {
   const points = csv_data.map((record) => get_points_from_csv_record(record));
+  // 如果第一个点和最后一个点相同, 则不需要闭合多边形
+  if (points[0][0] === points[points.length - 1][0]) {
+    // console.log("第一个点和最后一个点相同, 不需要闭合多边形");
+    return points;
+  }
+  // 添加第1个点到结尾，以闭合多边形
+  if (points.length > 0 && points[0].length == 2) {
+    points.push(points[0]);
+  }
   return points;
 }
 function create_vector_layer_from_kml(kml_data) {
@@ -211,8 +220,6 @@ function parse_coordinates_list(coordinates_list) {
    * 输入 Y 为东坐标（横坐标）, 需要+500000, 有带号即为8位, 无带号为6位
    * 但是在 GIS 里面一般X是横坐标（需要带号）, Y为纵坐标（恒正, 7位数）
    * 经过 proj4 转化的坐标 X Y 属性是满足 GIS 要求的,不需要交换位置了
-   *
-
    */
   const simple_points = coordinates_list[0];
   const x = simple_points[0];
@@ -272,14 +279,14 @@ function convert_coordinates_list_as_csv_data(coordinates_list) {
 }
 
 export {
+  clear_vector_layer,
+  convert_coordinates_list_as_csv_data,
   create_geojson_from_points,
   create_vector_layer_from_geojson,
   create_vector_layer_from_kml,
   generateAndDownloadZip,
-  clear_vector_layer,
-  convert_coordinates_list_as_csv_data,
+  get_kmldata_from_kmz,
+  get_points_from_csv,
   get_points_from_kml,
   parse_coordinates_list,
-  get_points_from_csv,
-  get_kmldata_from_kmz,
 };
