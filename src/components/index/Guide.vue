@@ -3,7 +3,7 @@
     <h2 class="text-xl mt-2 font-semibold">使用说明:</h2>
     <div>
       <h3>1. 上传地块坐标</h3>
-      <h4 class="pl-2 border-l-4 border-slate-300 my-1">CSV 文件格式</h4>
+      <h4 class="pl-2 border-l-4 border-slate-300 my-1">CSV 文件格式 ⚠️注意要有标题行 ！！</h4>
       <div class="flex flex-col justify-stretch lg:flex-row">
         <div class="w-full">
           <div class="text-xs">
