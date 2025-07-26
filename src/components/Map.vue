@@ -8,6 +8,7 @@ import { baseMaps, create_text_style, create_polygon_style } from "../utils/ol";
 import LayerSwitcher from "ol-layerswitcher";
 import { NorthArrow } from "@liuxspro/ol-north-arrow";
 
+
 // https://github.com/walkermatt/ol-layerswitcher
 const layerSwitcher = new LayerSwitcher({
   activationMode: "click",
@@ -68,7 +69,7 @@ const upload_file_data = ref({ uploaded: false, file: {}, center: [0, 0] });
 
 let olmap;
 const input_values = ref({ DKDM: "" }); // 保存表单 input (字段)的值
-const upload_points = ref({ lon_lat_points: [], proj_points: [], WKT: "", DH: 0 }); // 保存点位信息
+const upload_points = ref({ lon_lat_points: [], proj_points: [], WKT: "", DH: 0, ydmj: 0 }); // 保存点位信息
 const vec_layer = ref();
 
 function create_ol_map() {
@@ -154,9 +155,10 @@ async function handle_files() {
     return;
   }
   upload_points.value = parse_coordinates_list(points);
+  // console.log("上传的点位信息:", upload_points);
   input_values.value["DH"] = upload_points.value.DH; // 自动填入带号
+  input_values.value["YDMJ"] = upload_points.value.ydmj; // 自动填入地块面积
   const upload_ploygon = create_geojson_from_points(upload_points.value.lon_lat_points);
-  console.log(upload_ploygon);
   const center = centerOfMass(upload_ploygon).geometry.coordinates;
 
   vec_layer.value = create_vector_layer_from_geojson(upload_ploygon, false);
