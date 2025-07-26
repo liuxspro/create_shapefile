@@ -66,7 +66,6 @@ function get_points_from_kml(kml_data) {
   });
   const geom = kmlFeatures[0].getGeometry();
   const gemo_type = geom.getType();
-  // console.log(gemo_type, geom.getCoordinates());
   let coord_list;
   if (["Polygon", "MultiLineString"].includes(gemo_type)) {
     coord_list = geom.getCoordinates()[0];
@@ -83,17 +82,22 @@ function get_points_from_kml(kml_data) {
   return coord_list;
 }
 
+function calc_area(points) {
+  // 使用有向面积（鞋带公式）计算多边形面积
+  let area = 0;
+  const n = points.length;
+
+  for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n;
+    const [xi, yi] = points[i];
+    const [xj, yj] = points[j];
+    area += xi * yj - xj * yi;
+  }
+  return parseFloat((area / 2).toFixed(2));
+}
+
 function get_points_from_csv(csv_data) {
   const points = csv_data.map((record) => get_points_from_csv_record(record));
-  // 如果第一个点和最后一个点相同, 则不需要闭合多边形
-  if (points[0][0] === points[points.length - 1][0]) {
-    // console.log("第一个点和最后一个点相同, 不需要闭合多边形");
-    return points;
-  }
-  // 添加第1个点到结尾，以闭合多边形
-  if (points.length > 0 && points[0].length == 2) {
-    points.push(points[0]);
-  }
   return points;
 }
 function create_vector_layer_from_kml(kml_data) {
@@ -221,6 +225,18 @@ function parse_coordinates_list(coordinates_list) {
    * 但是在 GIS 里面一般X是横坐标（需要带号）, Y为纵坐标（恒正, 7位数）
    * 经过 proj4 转化的坐标 X Y 属性是满足 GIS 要求的,不需要交换位置了
    */
+  // 检查是否闭合
+  // 如果第一个点和最后一个点不相同, 则需要闭合多边形
+  if (
+    coordinates_list[0][0] != coordinates_list[coordinates_list.length - 1][0]
+  ) {
+    // 添加第1个点到结尾，以闭合多边形
+    if (coordinates_list.length > 0 && coordinates_list[0].length >= 2) {
+      coordinates_list.push(coordinates_list[0]);
+      console.log("已闭合多边形");
+    }
+  }
+
   const simple_points = coordinates_list[0];
   const x = simple_points[0];
   const y = simple_points[1];
@@ -228,6 +244,7 @@ function parse_coordinates_list(coordinates_list) {
   let DH;
   let lon_lat_points;
   let proj_points;
+  let ydmj = 0;
   if (simple_points[0] > 200) {
     // 输入坐标为投影坐标
     if (get_digits(y) == 8) {
@@ -259,11 +276,25 @@ function parse_coordinates_list(coordinates_list) {
       return proj4(WKT).forward([p[0], p[1]]);
     });
   }
+  // 计算面积(投影面积)
+  // 鞋带公式需要保证点的顺序是逆时针的
+  // 这里计算出来的面积为正说明是逆时针方向，需要改为顺时针方向
+  // 如果面积为负，说明是顺时针方向，无需改动
+  const area = calc_area(proj_points);
+  if (area > 0) {
+    proj_points = proj_points.toReversed();
+    lon_lat_points = lon_lat_points.toReversed();
+    console.log("修复不正确的环走向");
+    ydmj = area;
+  } else {
+    ydmj = -area;
+  }
   return {
     lon_lat_points,
     proj_points,
     WKT,
     DH,
+    ydmj,
   };
 }
 
