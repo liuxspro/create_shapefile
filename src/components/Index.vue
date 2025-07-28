@@ -48,8 +48,10 @@ import { NPopover } from "naive-ui"
         </div>
         <p>
           <a href="https://github.com/liuxspro/create_shapefile" target="_blank" class="ml-1 hover:underline">
-            CommitHash: {{ "__COMMIT__".slice(0, 7) }}</a>
+            CommitHash: {{ "__COMMIT__".slice(0, 7) }} </a>
+
         </p>
+        <p class="text-xs">Build at {{ "__buildDate__" }}</p>
       </div>
     </div>
     <Guide />
