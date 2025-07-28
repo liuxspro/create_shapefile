@@ -29,8 +29,9 @@ import {
   NForm,
   NFormItem,
 } from "naive-ui";
-import { useDialog } from "naive-ui";
+import { useDialog, useMessage } from "naive-ui";
 const dialog = useDialog();
+const message = useMessage();
 
 import Papa from "papaparse";
 import { round } from "es-toolkit";
@@ -95,7 +96,7 @@ onMounted(() => {
 
 function handleUpdateValue() {
   if (input_values.value.DKDM.length >= 14) {
-    console.log("地块代码长度应为13位");
+    message.warning("地块代码长度应为13位");
   }
   const display_text = `${select_stage.value}${input_values.value.DKDM}`;
   if (upload_file_data.value.uploaded) {

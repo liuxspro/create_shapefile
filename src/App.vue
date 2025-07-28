@@ -3,7 +3,7 @@ import { computed } from "vue";
 import NavBar from "./components/NavBar.vue";
 import { RouterView } from "vue-router";
 
-import { useOsTheme, darkTheme, NConfigProvider, NDialogProvider, zhCN, dateZhCN } from "naive-ui";
+import { useOsTheme, darkTheme, NConfigProvider, NDialogProvider, zhCN, dateZhCN, NMessageProvider } from "naive-ui";
 
 const osThemeRef = useOsTheme();
 const theme = computed(() => {
@@ -16,7 +16,9 @@ const theme = computed(() => {
     <NavBar />
     <n-config-provider :theme="theme" :locale="zhCN" :date-locale="dateZhCN">
       <n-dialog-provider>
-        <RouterView />
+        <n-message-provider>
+          <RouterView />
+        </n-message-provider>
       </n-dialog-provider>
     </n-config-provider>
   </div>
