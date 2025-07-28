@@ -9,6 +9,8 @@ import LayerSwitcher from "ol-layerswitcher";
 import { NorthArrow } from "@liuxspro/ol-north-arrow";
 
 
+
+
 // https://github.com/walkermatt/ol-layerswitcher
 const layerSwitcher = new LayerSwitcher({
   activationMode: "click",
@@ -92,6 +94,9 @@ onMounted(() => {
 });
 
 function handleUpdateValue() {
+  if (input_values.value.DKDM.length >= 14) {
+    console.log("地块代码长度应为13位");
+  }
   const display_text = `${select_stage.value}${input_values.value.DKDM}`;
   if (upload_file_data.value.uploaded) {
     const ploygon_style = create_polygon_style();
@@ -274,10 +279,21 @@ function create_shp() {
             <div id="fields">
               <!-- 必要字段 文本型 -->
               <n-form label-placement="left" label-width="5rem" show-require-mark :show-feedback="false">
-                <n-form-item :label="item" v-for="item in necessary_fields_char" :key="item"
-                  class="mb-3 dark:text-slate-100">
-                  <n-input size="" v-model:value="input_values[item]" :maxlength="FIELD_LENGTH[item]" show-count
-                    type="text" v-bind:placeholder="'请输入' + fileds_info[item]" @input="handleUpdateValue" />
+                <n-form-item label="DKMC" class="mb-3 dark:text-slate-100">
+                  <n-input size="" v-model:value="input_values['DKMC']" :maxlength="254" show-count type="text"
+                    v-bind:placeholder="'请输入' + fileds_info['DKMC']" />
+                </n-form-item>
+                <n-form-item label="DKDM" class="mb-3 dark:text-slate-100">
+                  <n-input size="" v-model:value="input_values['DKDM']" :maxlength="100" show-count type="text"
+                    v-bind:placeholder="'请输入' + fileds_info['DKDM']" @input="handleUpdateValue" />
+                </n-form-item>
+                <n-form-item label="XZQDM" class="mb-3 dark:text-slate-100">
+                  <n-input size="" v-model:value="input_values['XZQDM']" :maxlength="100" show-count type="text"
+                    v-bind:placeholder="'请输入' + fileds_info['XZQDM']" />
+                </n-form-item>
+                <n-form-item label="XZQMC" class="mb-3 dark:text-slate-100">
+                  <n-input size="" v-model:value="input_values['XZQMC']" :maxlength="100" show-count type="text"
+                    v-bind:placeholder="'请输入' + fileds_info['XZQMC']" />
                 </n-form-item>
               </n-form>
               <div>
