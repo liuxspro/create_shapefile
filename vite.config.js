@@ -4,6 +4,7 @@ import vue from "@vitejs/plugin-vue";
 import replace from "@rollup/plugin-replace";
 import { VitePWA } from "vite-plugin-pwa";
 import { execSync } from "node:child_process";
+import { version } from "./package.json";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -54,6 +55,7 @@ export default defineConfig({
     replace({
       __COMMIT__: execSync("git rev-parse HEAD").toString().trim(),
       __buildDate__: new Date().toLocaleString(),
+      __version__: version,
     }),
   ],
   resolve: {
