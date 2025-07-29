@@ -2,6 +2,7 @@
 import { ref, onMounted } from "vue";
 
 import { Map, View } from "ol";
+import { fromLonLat } from 'ol/proj';
 import { centerOfMass } from "@turf/center-of-mass";
 import { ScaleLine, Zoom } from "ol/control";
 import { baseMaps, create_text_style, create_polygon_style } from "../utils/ol";
@@ -80,10 +81,10 @@ function create_ol_map() {
     target: "map",
     layers: [baseMaps],
     view: new View({
-      center: [114.512937, 34.306549],
+      center: fromLonLat([114.512937, 34.306549]),
       zoom: 5,
       constrainResolution: true, // 将 resolution 约束为最接近的整数值
-      projection: "EPSG:4326", // 4326 地图会变形
+      projection: "EPSG:3857", // 4326 地图会变形
     }),
     controls: [new ScaleLine({ units: "metric" }), new Zoom(), new NorthArrow({ style: "D3", width: "80px" })],
   });
@@ -164,7 +165,7 @@ async function handle_files() {
   // console.log("上传的点位信息:", upload_points);
   input_values.value["DH"] = upload_points.value.DH; // 自动填入带号
   input_values.value["YDMJ"] = upload_points.value.ydmj; // 自动填入地块面积
-  const upload_ploygon = create_geojson_from_points(upload_points.value.lon_lat_points);
+  const upload_ploygon = create_geojson_from_points(upload_points.value.lon_lat_points.map((i) => fromLonLat(i)));
   const center = centerOfMass(upload_ploygon).geometry.coordinates;
 
   vec_layer.value = create_vector_layer_from_geojson(upload_ploygon, false);
