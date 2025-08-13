@@ -166,7 +166,7 @@ async function handle_files() {
   input_values.value["DH"] = upload_points.value.DH; // 自动填入带号
   input_values.value["YDMJ"] = upload_points.value.ydmj; // 自动填入地块面积
   const upload_ploygon = create_geojson_from_points(upload_points.value.lon_lat_points.map((i) => fromLonLat(i)));
-  const center = centerOfMass(upload_ploygon).geometry.coordinates;
+  const center = centerOfMass(create_geojson_from_points(upload_points.value.lon_lat_points)).geometry.coordinates;
 
   vec_layer.value = create_vector_layer_from_geojson(upload_ploygon, false);
   olmap.addLayer(vec_layer.value);
