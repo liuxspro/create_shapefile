@@ -166,7 +166,7 @@ async function handle_files() {
   input_values.value["DH"] = upload_points.value.DH; // 自动填入带号
   input_values.value["YDMJ"] = upload_points.value.ydmj; // 自动填入地块面积
   const upload_ploygon = create_geojson_from_points(upload_points.value.lon_lat_points.map((i) => fromLonLat(i)));
-  const center = centerOfMass(upload_ploygon).geometry.coordinates;
+  const center = centerOfMass(create_geojson_from_points(upload_points.value.lon_lat_points)).geometry.coordinates;
 
   vec_layer.value = create_vector_layer_from_geojson(upload_ploygon, false);
   olmap.addLayer(vec_layer.value);
@@ -290,7 +290,7 @@ function create_shp() {
                     v-bind:placeholder="'请输入' + fileds_info['DKDM']" @input="handleUpdateValue" />
                 </n-form-item>
                 <n-form-item label="XZQDM" class="mb-3 dark:text-slate-100">
-                  <n-input size="" v-model:value="input_values['XZQDM']" :maxlength="100" show-count type="text"
+                  <n-input size="" v-model:value="input_values['XZQDM']" :maxlength="12" show-count type="text"
                     v-bind:placeholder="'请输入' + fileds_info['XZQDM']" />
                 </n-form-item>
                 <n-form-item label="XZQMC" class="mb-3 dark:text-slate-100">
