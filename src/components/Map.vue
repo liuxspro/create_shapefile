@@ -290,7 +290,7 @@ function create_shp() {
                     v-bind:placeholder="'请输入' + fileds_info['DKDM']" @input="handleUpdateValue" />
                 </n-form-item>
                 <n-form-item label="XZQDM" class="mb-3 dark:text-slate-100">
-                  <n-input size="" v-model:value="input_values['XZQDM']" :maxlength="100" show-count type="text"
+                  <n-input size="" v-model:value="input_values['XZQDM']" :maxlength="12" show-count type="text"
                     v-bind:placeholder="'请输入' + fileds_info['XZQDM']" />
                 </n-form-item>
                 <n-form-item label="XZQMC" class="mb-3 dark:text-slate-100">
