@@ -10,10 +10,10 @@
   },
   "dependencies": {
     "@liuxspro/ol-north-arrow": "^0.1.1",
-    "@liuxspro/utils": "npm:@jsr/liuxspro__utils@^0.1.8",
+    "@liuxspro/utils": "npm:@jsr/liuxspro__utils@^0.1.9",
     "@mapbox/shp-write": "^0.4.3",
     "@turf/center-of-mass": "^7.2.0",
-    "es-toolkit": "^1.39.8",
+    "es-toolkit": "^1.39.9",
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
     "ol": "^10.6.1",
