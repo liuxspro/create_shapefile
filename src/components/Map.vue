@@ -230,6 +230,15 @@ function create_shp() {
   if (fields) {
     generateAndDownloadZip(points, upload_points.value.WKT, stage, fields);
   }
+  // 统计创建了多少个文件
+  fetch("https://service.liuxs.pro/count/add", { method: 'get' })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Count updated successfully:", data);
+    })
+    .catch((error) => {
+      console.error("Error updating count:", error);
+    });
 }
 </script>
 
