@@ -1,7 +1,21 @@
 <script setup>
 import { RouterLink } from "vue-router";
 import Guide from "./index/Guide.vue";
-import { NPopover } from "naive-ui"
+import { NPopover } from "naive-ui";
+import { ref, onMounted } from "vue";
+
+let create_num = ref(0)
+async function get_create_num() {
+  const url = "https://service.liuxs.pro/count";
+  const r = await fetch(url)
+  const j = await r.json()
+  return j.created_num
+}
+
+onMounted(() => {
+  get_create_num().then(value => { console.log(value); create_num.value = value })
+
+});
 </script>
 
 <template>
@@ -14,31 +28,35 @@ import { NPopover } from "naive-ui"
         <p>地块边界文件制作</p>
       </div>
       <div id="features">
-        <div class="">
-          <div class="p-2">
-            <span>✨ 满足</span>
-            <a href="http://114.251.10.109/page/landuserlogin.html" target="_blank" class="text-blue-500 my-1">
-              全国建设用地土壤环境管理信息系统
-            </a>
-            <span>要求.</span>
-          </div>
-          <div class="p-2">✨ 制作简单, 无需 GIS 软件, 一切都在浏览器中进行.</div>
-          <div class="p-2">✨ 纯浏览器处理, 无后台服务器, 无泄露隐私之忧.</div>
+        <div class="p-2">
+          <span>✨ 满足</span>
+          <a href="http://114.251.10.109/page/landuserlogin.html" target="_blank" class="text-blue-500 my-1">
+            全国建设用地土壤环境管理信息系统
+          </a>
+          <span>要求.</span>
+        </div>
+        <div class="p-2">✨ 制作简单, 无需 GIS 软件, 一切都在浏览器中进行.</div>
+        <div class="p-2">✨ 纯浏览器处理, 无后台服务器, 可作为离线 PWA 应用安装.</div>
+        <div class="p-2" v-if="create_num > 0">
+          <span>💖 已成功制作</span>
+          <span class="mx-1 px-1 py-0.5 bg-green-500 rounded-md text-white"> {{ create_num }}</span>
+          <span>个边界文件 </span>
+          <n-popover trigger="hover">
+            <template #trigger>
+              <span class="p-1 text-blue-600 font-semibold">赞赏作者 ☕</span>
+            </template>
+            <img src="@/assets/zs.webp" width="400px" />
+          </n-popover>
         </div>
       </div>
-      <div id="action" class="my-2">
+      <div id=" action" class="my-2">
         <RouterLink to="/create">
           <button class="py-2 px-8 mt-8 border border-stone-400 rounded-md hover:bg-gray-100">开始制作</button>
         </RouterLink>
       </div>
       <div class="py-12 text-center font-mono text-sm">
         <p class="p-1">code with ❤️ by Liuxspro</p>
-        <n-popover trigger="hover">
-          <template #trigger>
-            <p class="p-1 text-blue-600 font-semibold">Buy Me A Coffee ☕</p>
-          </template>
-          <img src="@/assets/zs.webp" width="400px" />
-        </n-popover>
+
         <div class="flex justify-center items-center pt-2 mb-1">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
             <path fill="currentColor"
