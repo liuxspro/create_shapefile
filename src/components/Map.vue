@@ -35,7 +35,6 @@ const dialog = useDialog();
 const message = useMessage();
 
 import Papa from "papaparse";
-import { round } from "es-toolkit";
 
 import {
   create_geojson_from_points,
@@ -48,7 +47,7 @@ import {
   get_kmldata_from_kmz,
 } from "../utils";
 
-import { FIELD_LENGTH } from "../utils/dbfwrite";
+import { FIELD_LENGTH } from "../utils/dbf";
 
 const necessary_fields_char = ["DKMC", "DKDM", "XZQDM", "XZQMC"];
 const other_fields = ["SCDW", "BZ"];
@@ -199,7 +198,7 @@ function parse_timestamp(timestamp) {
 
 function correct_fields(fields) {
   // 验证字段
-  let { DKMC, DKDM, XZQDM, XZQMC, YDMJ, DH, SCRQ = "", SCDW = "", BZ = "" } = fields;
+  let { DKMC, DKDM, XZQDM, XZQMC, YDMJ, DH, SCRQ = null, SCDW = null, BZ = null } = fields;
   const requiredFields = { DKMC, DKDM, XZQDM, XZQMC, YDMJ, DH };
 
   for (const field of Object.keys(requiredFields)) {
@@ -212,13 +211,6 @@ function correct_fields(fields) {
     alert("带号范围应在25~45之间");
     return;
   }
-
-  // 如果输入了SCRQ 将它从时间戳转为日期格式
-  if (SCRQ != "") {
-    SCRQ = parse_timestamp(SCRQ);
-  }
-  // 用地面积保留两位小数
-  YDMJ = round(YDMJ, 2).toFixed(2);
 
   return { DKMC, DKDM, XZQMC, XZQDM, YDMJ, DH, SCRQ, SCDW, BZ };
 }

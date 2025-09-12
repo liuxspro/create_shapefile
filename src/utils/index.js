@@ -9,7 +9,7 @@ import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import proj4 from "proj4";
 
-import { create_dbf } from "../utils/dbfwrite";
+import { create_dbf } from "./dbf";
 import { create_polygon_style } from "./ol";
 import { get_digits, getEsriWKT_3_Degree } from "@liuxspro/utils";
 
