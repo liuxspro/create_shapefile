@@ -11,12 +11,12 @@ import proj4 from "proj4";
 
 import { create_dbf } from "./dbf";
 import { create_polygon_style } from "./ol";
-import { get_digits, getEsriWKT_3_Degree } from "@liuxspro/utils";
-
-// 根据经度获取带号
-function get_zone(longitude) {
-  return Math.round(longitude / 3);
-}
+import {
+  calc_signed_area,
+  get_cgcs2000_wkt,
+  get_zone,
+} from "@liuxspro/libs/geo";
+import { get_digits } from "@liuxspro/libs/utils";
 
 function clear_vector_layer(map) {
   // 获取所有图层
@@ -80,20 +80,6 @@ function get_points_from_kml(kml_data) {
     coord_list = geom.getCoordinates()[0][0];
   }
   return coord_list;
-}
-
-function calc_area(points) {
-  // 使用有向面积（鞋带公式）计算多边形面积
-  let area = 0;
-  const n = points.length;
-
-  for (let i = 0; i < n; i++) {
-    const j = (i + 1) % n;
-    const [xi, yi] = points[i];
-    const [xj, yj] = points[j];
-    area += xi * yj - xj * yi;
-  }
-  return parseFloat((area / 2).toFixed(2));
 }
 
 function get_points_from_csv(csv_data) {
@@ -269,7 +255,7 @@ function parse_coordinates_list(coordinates_list) {
       return [p[0], p[1]];
     });
     DH = get_zone(x);
-    WKT = getEsriWKT_3_Degree(DH);
+    WKT = get_cgcs2000_wkt(DH);
     proj_points = coordinates_list.map((p) => {
       // 从经纬度转为投影坐标
       // 经过 proj4 转化的坐标 X Y 属性是满足 GIS 要求的,不需要交换位置了
@@ -280,7 +266,7 @@ function parse_coordinates_list(coordinates_list) {
   // 鞋带公式需要保证点的顺序是逆时针的
   // 这里计算出来的面积为正说明是逆时针方向，需要改为顺时针方向
   // 如果面积为负，说明是顺时针方向，无需改动
-  const area = calc_area(proj_points);
+  const area = calc_signed_area(proj_points);
   if (area > 0) {
     proj_points = proj_points.toReversed();
     lon_lat_points = lon_lat_points.toReversed();
@@ -289,6 +275,7 @@ function parse_coordinates_list(coordinates_list) {
   } else {
     ydmj = -area;
   }
+  ydmj = parseFloat(ydmj.toFixed(2));
   return {
     lon_lat_points,
     proj_points,
