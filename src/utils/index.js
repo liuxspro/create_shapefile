@@ -236,7 +236,7 @@ function parse_coordinates_list(coordinates_list) {
     if (get_digits(y) == 8) {
       //含带号的坐标
       DH = parseInt(y.toString().slice(0, 2));
-      WKT = getEsriWKT_3_Degree(DH);
+      WKT = get_cgcs2000_wkt(DH);
       proj_points = coordinates_list.map((p) => {
         // 满足 GIS 坐标系定义, 交换 X Y 位置
         return [p[1], p[0]];
@@ -247,7 +247,8 @@ function parse_coordinates_list(coordinates_list) {
       });
     } else if (get_digits(y) == 6) {
       // 如何处理无带号的坐标呢 TODO
-      console.log("无带号的坐标", x, y);
+      // console.log("无带号的坐标", x, y);
+      throw new Error("无法处理无带号的坐标");
     }
   } else {
     // 经纬度坐标
