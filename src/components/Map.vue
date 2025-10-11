@@ -237,7 +237,7 @@ function create_shp() {
 <template>
   <div id="main" class="grow flex flex-col lg:flex-row h-full">
     <div id="side" class="w-full lg:w-5/12 px-8 py-4 lg:py-4">
-      <div class="mb-2 p-1 lg:p-2 border border-slate-300 rounded-md">
+      <div class="mb-2 p-1 lg:p-2 border border-slate-300 rounded-md text-center">
         <n-button quaternary @click="load_file" class="w-full text-left">
           <template #icon>
             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 256 256">
@@ -329,7 +329,7 @@ function create_shp() {
           </n-collapse-item>
         </n-collapse>
       </div>
-      <div class="mb-2 p-1 lg:p-4 border border-slate-300 rounded-md">
+      <div class="mb-2 p-1 lg:p-4 border border-slate-300 rounded-md text-center">
         <n-button quaternary type="success" class="w-full" @click="create_shp" :disabled="!upload_file_data.uploaded">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 256 256">
             <path fill="currentColor"

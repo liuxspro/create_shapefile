@@ -10,7 +10,7 @@
             <p>经纬度坐标</p>
             <p>按照: 拐点编号、经度、纬度的顺序排列.</p>
           </div>
-          <div class="font-mono text-xs border p-2 rounded-md mr-2 dark:border-gray-500">
+          <div class="font-mono text-xs border p-2 rounded-md mr-2 dark:border-gray-500 border-gray-200">
             <pre class="whitespace-pre-line">
                 <code>编号,经度,纬度</code>
                 <code>1,117.513070,34.307738</code>
@@ -27,7 +27,7 @@
             <p>投影坐标</p>
             <p>按照: 编号，X（北坐标），Y（东坐标，含带号）的顺序排列.</p>
           </div>
-          <div class="font-mono text-xs border p-2 rounded-md dark:border-gray-500">
+          <div class="font-mono text-xs border p-2 rounded-md dark:border-gray-500 border-gray-200">
             <pre class="whitespace-pre-line">
                 <code>编号,X,Y</code>
                 <code>1,3797916.479,39547228.491</code>
@@ -81,12 +81,4 @@
     </div>
   </div>
 </template>
-<style scoped>
-h3 {
-  @apply font-semibold text-lg mt-4 text-gray-900 dark:text-gray-300;
-}
-
-code.field_name {
-  @apply p-1 border bg-gray-200 rounded-md m-1 dark:bg-slate-500 dark:border-slate-400 font-sans whitespace-nowrap;
-}
-</style>
+<style scoped></style>
