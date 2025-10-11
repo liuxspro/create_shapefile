@@ -14,9 +14,6 @@ importers:
       '@liuxspro/ol-north-arrow':
         specifier: ^0.1.1
         version: 0.1.1(ol@10.6.1)
-      '@liuxspro/utils':
-        specifier: npm:@jsr/liuxspro__utils@^0.1.12
-        version: '@jsr/liuxspro__utils@0.1.12'
       '@mapbox/shp-write':
         specifier: ^0.4.3
         version: 0.4.3
