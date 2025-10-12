@@ -13,7 +13,7 @@ async function get_create_num() {
 }
 
 onMounted(() => {
-  get_create_num().then(value => { console.log(value); create_num.value = value })
+  get_create_num().then(value => { create_num.value = value })
 
 });
 </script>
