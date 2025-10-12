@@ -126,25 +126,28 @@ function create_vector_layer_from_geojson(geojson_data, trans = true) {
   return vectorLayer;
 }
 
+function create_zip(filename, shp_files, dbf_data, prj) {
+  let zip = new JSZip();
+  let zip_target = zip.folder(filename);
+  zip_target.file(`${filename}.shp`, shp_files.shp.buffer);
+  zip_target.file(`${filename}.shx`, shp_files.shx.buffer);
+  zip_target.file(`${filename}.dbf`, dbf_data.buffer);
+  zip_target.file(`${filename}.cpg`, "UTF-8");
+  zip_target.file(`${filename}.prj`, prj);
+  return zip.generateAsync({ type: "blob", compression: "DEFLATE" });
+}
+
 function generateAndDownloadZip(points_data, WKT, select_stage, fields) {
   // 根据字段生成dbf文件
   const dbf_data = create_dbf(fields);
   // 使用shpwrite生成shp和shx文件
   const points = [[points_data]];
   const filename = `${select_stage}${fields.DKDM}`;
-  shpwrite.write([{}], "POLYGON", points, (err, files) => {
-    let zip = new JSZip();
-    let zip_target = zip.folder(filename);
-    zip_target.file(`${filename}.shp`, files.shp.buffer);
-    zip_target.file(`${filename}.shx`, files.shx.buffer);
-    zip_target.file(`${filename}.dbf`, dbf_data.buffer);
-    zip_target.file(`${filename}.cpg`, "UTF-8");
-    zip_target.file(`${filename}.prj`, WKT);
-    zip
-      .generateAsync({ type: "blob", compression: "DEFLATE" })
-      .then(function (content) {
-        saveAs(content, `${filename}.zip`);
-      });
+  shpwrite.write([{}], "POLYGON", points, async (err, files) => {
+    if (err) throw err;
+    const zip_data = await create_zip(filename, files, dbf_data, WKT);
+    console.log(zip_data);
+    saveAs(zip_data, `${filename}.zip`);
   });
 }
 
