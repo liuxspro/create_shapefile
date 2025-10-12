@@ -30,7 +30,6 @@ export function create_dbf(fields) {
     SCRQ = new Date(SCRQ);
   }
   const record = [DKMC, DKDM, XZQDM, XZQMC, YDMJ, DH, SCRQ, SCDW, BZ];
-  console.log(record);
   const dbf = new DBF(BJ_FIELDS, [record]);
   return dbf.data;
 }
