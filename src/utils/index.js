@@ -6,7 +6,7 @@ import KML from "ol/format/KML.js";
 
 import * as shpwrite from "@mapbox/shp-write";
 import JSZip from "jszip";
-import { saveAs } from "file-saver";
+import { fileSave } from "browser-fs-access";
 import proj4 from "proj4";
 
 import { create_dbf } from "./dbf";
@@ -146,8 +146,11 @@ function generateAndDownloadZip(points_data, WKT, select_stage, fields) {
   shpwrite.write([{}], "POLYGON", points, async (err, files) => {
     if (err) throw err;
     const zip_data = await create_zip(filename, files, dbf_data, WKT);
-    console.log(zip_data);
-    saveAs(zip_data, `${filename}.zip`);
+    fileSave(zip_data, {
+      fileName: filename,
+      extensions: [".zip"],
+      startIn: "downloads",
+    });
   });
 }
 
