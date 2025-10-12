@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 
 import { Map, View } from "ol";
 import { fromLonLat } from "ol/proj";
@@ -37,7 +37,6 @@ import {
 
 
 const upload_file_data = ref({ uploaded: false, file: {}, center: [0, 0] });
-const file_name = ref("");
 const stage = ref("初步调查")
 
 let olmap;
@@ -144,11 +143,6 @@ async function handle_files() {
   olmap.getView().fit(vec_layer.value.getSource().getExtent());
   upload_file_data.value.uploaded = true;
   upload_file_data.value.center = center.map((i) => i.toFixed(6)).toString();
-}
-
-function handleChildUpdate(value) {
-  file_name.value = value;
-  console.log("文件名", file_name.value);
 }
 
 const handleStageUpdate = (value) => { stage.value = value }
