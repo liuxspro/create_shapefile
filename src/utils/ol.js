@@ -1,7 +1,6 @@
 import XYZ from "ol/source/XYZ.js";
 import TileLayer from "ol/layer/Tile";
-import { Fill, Stroke, Text, Style } from "ol/style.js";
-import SourceOSM from "ol/source/OSM";
+import { Fill, Stroke, Style, Text } from "ol/style.js";
 import LayerGroup from "ol/layer/Group";
 
 // 底图
@@ -10,14 +9,8 @@ const GoogleMap = new XYZ({
 });
 
 const EsriMap = new XYZ({
-  url: "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-});
-
-const OSM = new TileLayer({
-  title: "OSM",
-  type: "base",
-  visible: false,
-  source: new SourceOSM(),
+  url:
+    "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
 });
 
 const Google = new TileLayer({
@@ -36,7 +29,7 @@ const Esri = new TileLayer({
 
 const baseMaps = new LayerGroup({
   title: "底图",
-  layers: [OSM, Google, Esri],
+  layers: [Google, Esri],
 });
 
 function create_polygon_style() {
@@ -66,4 +59,4 @@ function create_text_style(text) {
   });
 }
 
-export { baseMaps, create_text_style, create_polygon_style };
+export { baseMaps, create_polygon_style, create_text_style };
