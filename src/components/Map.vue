@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, defineAsyncComponent } from "vue";
 
 import { Map, View } from "ol";
 import { fromLonLat } from "ol/proj";
@@ -8,7 +8,8 @@ import { ScaleLine, Zoom } from "ol/control";
 import { baseMaps } from "../utils/ol";
 import LayerSwitcher from "ol-layerswitcher";
 import { NorthArrow } from "@liuxspro/ol-north-arrow";
-import FieldInput from "./FieldInput.vue";
+
+const FieldInput = defineAsyncComponent(() => import("./FieldInput.vue"));
 
 // https://github.com/walkermatt/ol-layerswitcher
 const layerSwitcher = new LayerSwitcher({
@@ -34,10 +35,8 @@ import {
   get_kmldata_from_kmz,
 } from "../utils";
 
-
-
 const upload_file_data = ref({ uploaded: false, file: {}, center: [0, 0] });
-const stage = ref("初步调查")
+const stage = ref("初步调查");
 
 let olmap;
 const input_values = ref({ DKDM: "" }); // 保存表单 input (字段)的值
@@ -145,7 +144,9 @@ async function handle_files() {
   upload_file_data.value.center = center.map((i) => i.toFixed(6)).toString();
 }
 
-const handleStageUpdate = (value) => { stage.value = value }
+const handleStageUpdate = (value) => {
+  stage.value = value;
+};
 
 function load_file() {
   clear_vector_layer(olmap); // 清除矢量图层
@@ -195,7 +196,12 @@ function create_shp() {
   const fields = correct_fields(input_values.value);
   const points = upload_points.value.proj_points;
   if (fields) {
-    generateAndDownloadZip(points, upload_points.value.WKT, stage.value, fields);
+    generateAndDownloadZip(
+      points,
+      upload_points.value.WKT,
+      stage.value,
+      fields
+    );
   }
   // 统计创建了多少个文件
   // fetch("https://service.liuxs.pro/count/add", { method: "get" })
