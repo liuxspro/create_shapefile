@@ -1,23 +1,13 @@
 <script setup>
-import { ref, onMounted, defineAsyncComponent, computed } from "vue";
-import { Map, View } from "ol";
+import { ref, defineAsyncComponent, computed } from "vue";
 import { fromLonLat } from "ol/proj";
 import { centerOfMass } from "@turf/center-of-mass";
-import { ScaleLine, Zoom } from "ol/control";
-import { baseMaps } from "../utils/ol";
-import LayerSwitcher from "ol-layerswitcher";
-import { NorthArrow } from "@liuxspro/ol-north-arrow";
 
 const FieldInput = defineAsyncComponent(() => import("./FieldInput.vue"));
+const OlMap = defineAsyncComponent(() => import("./OlMap.vue"));
 
+const mapRef = ref(null);
 const isDev = computed(() => import.meta.env.DEV);
-
-// https://github.com/walkermatt/ol-layerswitcher
-const layerSwitcher = new LayerSwitcher({
-  activationMode: "click",
-  reverse: true,
-  groupSelectStyle: "children",
-});
 
 import { NButton } from "naive-ui";
 import { useDialog } from "naive-ui";
@@ -30,7 +20,6 @@ import {
   create_vector_layer_from_geojson,
   generateAndDownloadZip,
   get_points_from_csv,
-  clear_vector_layer,
   get_points_from_kml,
   parse_coordinates_list,
   get_kmldata_from_kmz,
@@ -39,7 +28,6 @@ import {
 const upload_file_data = ref({ uploaded: false, file: {}, center: [0, 0] });
 const stage = ref("初步调查");
 
-let olmap;
 const input_values = ref({ DKDM: "" }); // 保存表单 input (字段)的值
 const upload_points = ref({
   lon_lat_points: [],
@@ -49,29 +37,6 @@ const upload_points = ref({
   ydmj: 0,
 }); // 保存点位信息
 const vec_layer = ref();
-
-function create_ol_map() {
-  olmap = new Map({
-    target: "map",
-    layers: [baseMaps],
-    view: new View({
-      center: fromLonLat([114.512937, 34.306549]),
-      zoom: 5,
-      constrainResolution: true, // 将 resolution 约束为最接近的整数值
-      projection: "EPSG:3857", // 4326 地图会变形
-    }),
-    controls: [
-      new ScaleLine({ units: "metric" }),
-      new Zoom(),
-      new NorthArrow({ style: "D3", width: "80px" }),
-    ],
-  });
-  olmap.addControl(layerSwitcher);
-}
-
-onMounted(() => {
-  create_ol_map();
-});
 
 async function handle_files() {
   const file_list = this.files;
@@ -137,10 +102,8 @@ async function handle_files() {
   const center = centerOfMass(
     create_geojson_from_points(upload_points.value.lon_lat_points)
   ).geometry.coordinates;
-
   vec_layer.value = create_vector_layer_from_geojson(upload_ploygon, false);
-  olmap.addLayer(vec_layer.value);
-  olmap.getView().fit(vec_layer.value.getSource().getExtent());
+  mapRef.value.add_vec_layer(vec_layer.value);
   upload_file_data.value.uploaded = true;
   upload_file_data.value.center = center.map((i) => i.toFixed(6)).toString();
 }
@@ -150,7 +113,7 @@ const handleStageUpdate = (value) => {
 };
 
 function load_file() {
-  clear_vector_layer(olmap); // 清除矢量图层
+  mapRef.value.clear_vec_layer();
   upload_file_data.value.uploaded = false;
   const input = document.createElement("input");
   input.type = "file";
@@ -263,8 +226,7 @@ function create_shp() {
         </n-button>
       </div>
     </div>
-
-    <div id="map" class="px-8 py-4 lg:py-4 lg:pl-0 lg:pr-8 w-full lg:h-auto lg:min-h-[800px] h-[400px]"></div>
+    <OlMap ref="mapRef" />
   </div>
 </template>
 
