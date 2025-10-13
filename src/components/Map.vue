@@ -1,6 +1,5 @@
 <script setup>
-import { ref, onMounted, defineAsyncComponent } from "vue";
-
+import { ref, onMounted, defineAsyncComponent, computed } from "vue";
 import { Map, View } from "ol";
 import { fromLonLat } from "ol/proj";
 import { centerOfMass } from "@turf/center-of-mass";
@@ -10,6 +9,8 @@ import LayerSwitcher from "ol-layerswitcher";
 import { NorthArrow } from "@liuxspro/ol-north-arrow";
 
 const FieldInput = defineAsyncComponent(() => import("./FieldInput.vue"));
+
+const isDev = computed(() => import.meta.env.DEV);
 
 // https://github.com/walkermatt/ol-layerswitcher
 const layerSwitcher = new LayerSwitcher({
@@ -204,14 +205,16 @@ function create_shp() {
     );
   }
   // 统计创建了多少个文件
-  // fetch("https://service.liuxs.pro/count/add", { method: "get" })
-  //   .then((response) => response.json())
-  //   .then((data) => {
-  //     console.log("Count updated successfully:", data);
-  //   })
-  //   .catch((error) => {
-  //     console.error("Error updating count:", error);
-  //   });
+  if (!isDev) {
+    fetch("https://service.liuxs.pro/count/add", { method: "get" })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Count updated successfully:", data);
+      })
+      .catch((error) => {
+        console.error("Error updating count:", error);
+      });
+  }
 }
 </script>
 

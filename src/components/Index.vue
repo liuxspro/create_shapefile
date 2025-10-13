@@ -2,7 +2,9 @@
 import { RouterLink } from "vue-router";
 import Guide from "./index/Guide.vue";
 import { NPopover } from "naive-ui";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
+
+const isDev = computed(() => import.meta.env.DEV)
 
 let create_num = ref(0)
 async function get_create_num() {
@@ -37,7 +39,7 @@ onMounted(() => {
         </div>
         <div class="p-2">✨ 制作简单, 无需 GIS 软件, 一切都在浏览器中进行.</div>
         <div class="p-2">✨ 纯浏览器处理, 无后台服务器, 可作为离线 PWA 应用安装.</div>
-        <div class="p-2" v-if="create_num > 0">
+        <div class="p-2" v-if="!isDev">
           <span>💖 已成功制作</span>
           <span class="mx-1 px-1 py-0.5 bg-green-500 rounded-md text-white"> {{ create_num }}</span>
           <span>个边界文件 </span>
