@@ -46,7 +46,7 @@ function create_polygon_style() {
 
 function create_text_style(text) {
   return new Text({
-    font: "2em sans-serif",
+    font: "1.5em sans-serif",
     text: text,
     overflow: true,
     fill: new Fill({

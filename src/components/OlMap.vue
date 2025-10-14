@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, defineExpose } from "vue";
+import { ref, onMounted } from "vue";
 import { baseMaps } from "../utils/ol";
 import { fromLonLat } from "ol/proj";
 import { Map, View } from "ol";
@@ -9,16 +9,10 @@ import LayerSwitcher from "ol-layerswitcher";
 import { NorthArrow } from "@liuxspro/ol-north-arrow";
 
 const map = ref(Map);
-// https://github.com/walkermatt/ol-layerswitcher
-const layerSwitcher = new LayerSwitcher({
-  activationMode: "click",
-  reverse: true,
-  groupSelectStyle: "children",
-});
 
 onMounted(() => {
   map.value = new Map({
-    target: "map2",
+    target: "map",
     layers: [baseMaps],
     view: new View({
       center: fromLonLat([114.512937, 34.306549]),
@@ -30,7 +24,12 @@ onMounted(() => {
       new ScaleLine({ units: "metric" }),
       new Zoom(),
       new NorthArrow({ style: "D3", width: "80px" }),
-      layerSwitcher
+      // https://github.com/walkermatt/ol-layerswitcher
+      new LayerSwitcher({
+        activationMode: "click",
+        reverse: true,
+        groupSelectStyle: "children",
+      }),
     ],
   });
 });
@@ -39,6 +38,7 @@ function add_vec_layer(vec_layer) {
   map.value.addLayer(vec_layer);
   map.value.getView().fit(vec_layer.getSource().getExtent());
 }
+
 function clear_vec_layer() {
   const all_layers = map.value.getAllLayers();
   all_layers.forEach((layer) => {
@@ -56,5 +56,5 @@ defineExpose({
 </script>
 
 <template>
-  <div id="map2" class="px-8 py-4 lg:py-4 lg:pl-0 lg:pr-8 w-full lg:h-auto lg:min-h-[800px] h-[400px]"></div>
+  <div id="map" class="px-8 py-4 lg:py-4 lg:pl-0 lg:pr-8 w-full lg:h-auto lg:min-h-[800px] h-[400px]"></div>
 </template>

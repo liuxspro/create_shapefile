@@ -18,19 +18,6 @@ import {
 } from "@liuxspro/libs/geo";
 import { get_digits } from "@liuxspro/libs/utils";
 
-function clear_vector_layer(map) {
-  // 获取所有图层
-  const allLayers = map.getAllLayers();
-  // 遍历图层并移除 VectorLayer
-  allLayers.forEach((layer) => {
-    // 判断图层类型是否为 TileLayer
-    if (layer instanceof VectorLayer) {
-      // 移除 TileLayer
-      map.removeLayer(layer);
-    }
-  });
-}
-
 function create_geojson_from_points(points, properties = {}) {
   return {
     type: "FeatureCollection",
@@ -150,6 +137,8 @@ function generateAndDownloadZip(points_data, WKT, select_stage, fields) {
       fileName: filename,
       extensions: [".zip"],
       startIn: "downloads",
+    }).catch((err) => {
+      console.log("取消保存", err);
     });
   });
 }
@@ -304,7 +293,6 @@ function convert_coordinates_list_as_csv_data(coordinates_list) {
 }
 
 export {
-  clear_vector_layer,
   convert_coordinates_list_as_csv_data,
   create_geojson_from_points,
   create_vector_layer_from_geojson,
