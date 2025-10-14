@@ -50,19 +50,24 @@ const pwa = VitePWA({
 });
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [
-    vue(),
-    replace({
-      __COMMIT__: execSync("git rev-parse HEAD").toString().trim(),
-      __buildDate__: new Date().toLocaleString(),
-      __version__: version,
-      preventAssignment: true,
-    }),
-  ],
-  resolve: {
-    alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
+export default defineConfig(({ command }) => {
+  const isDev = command === "serve";
+  console.log("Development Mode");
+  return {
+    plugins: [
+      vue(),
+      replace({
+        __COMMIT__: execSync("git rev-parse HEAD").toString().trim(),
+        __buildDate__: new Date().toLocaleString(),
+        __version__: version,
+        preventAssignment: true,
+      }),
+      !isDev && pwa,
+    ].filter(Boolean),
+    resolve: {
+      alias: {
+        "@": fileURLToPath(new URL("./src", import.meta.url)),
+      },
     },
-  },
+  };
 });
