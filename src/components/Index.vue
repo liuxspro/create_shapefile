@@ -2,21 +2,22 @@
 import { RouterLink } from "vue-router";
 import Guide from "./index/Guide.vue";
 import { NPopover } from "naive-ui";
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 
-const isDev = computed(() => import.meta.env.DEV)
+const isDev = import.meta.env.DEV;
 
-let create_num = ref(0)
+let create_num = ref(0);
 async function get_create_num() {
   const url = "https://service.liuxs.pro/count";
-  const r = await fetch(url)
-  const j = await r.json()
-  return j.created_num
+  const r = await fetch(url);
+  const j = await r.json();
+  return j.created_num;
 }
 
 onMounted(() => {
-  get_create_num().then(value => { create_num.value = value })
-
+  get_create_num().then((value) => {
+    create_num.value = value;
+  });
 });
 </script>
 
@@ -38,10 +39,13 @@ onMounted(() => {
           <span>要求.</span>
         </div>
         <div class="p-2">✨ 制作简单, 无需 GIS 软件, 一切都在浏览器中进行.</div>
-        <div class="p-2">✨ 纯浏览器处理, 无后台服务器, 可作为离线 PWA 应用安装.</div>
+        <div class="p-2">
+          ✨ 纯浏览器处理, 无后台服务器, 可作为离线 PWA 应用安装.
+        </div>
         <div class="p-2" v-if="!isDev">
           <span>💖 已成功制作</span>
-          <span class="mx-1 px-1 py-0.5 bg-green-500 rounded-md text-white"> {{ create_num }}</span>
+          <span class="mx-1 px-1 py-0.5 bg-green-500 rounded-md text-white">
+            {{ create_num }}</span>
           <span>个边界文件 </span>
           <n-popover trigger="hover">
             <template #trigger>
@@ -53,7 +57,9 @@ onMounted(() => {
       </div>
       <div id=" action" class="my-2">
         <RouterLink to="/create">
-          <button class="py-2 px-8 mt-8 border border-stone-400 rounded-md hover:bg-gray-100">开始制作</button>
+          <button class="py-2 px-8 mt-8 border border-stone-400 rounded-md hover:bg-gray-100">
+            开始制作
+          </button>
         </RouterLink>
       </div>
       <div class="py-12 text-center font-mono text-sm">
@@ -77,8 +83,8 @@ onMounted(() => {
         </div>
         <p>
           <a href="https://github.com/liuxspro/create_shapefile" target="_blank" class="ml-1 hover:underline">
-            CommitHash: {{ "__COMMIT__".slice(0, 7) }} </a>
-
+            CommitHash: {{ "__COMMIT__".slice(0, 7) }}
+          </a>
         </p>
         <p class="text-xs">Build at {{ "__buildDate__" }}</p>
       </div>

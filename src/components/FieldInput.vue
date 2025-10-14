@@ -1,7 +1,5 @@
 <template>
   <div class="mb-2 p-4 lg:p-4 border border-slate-300 rounded-md">
-
-
     <n-collapse :default-expanded-names="['1']" class="min-h-4">
       <n-collapse-item name="1">
         <template #header>
@@ -77,11 +75,12 @@
 import { ref } from "vue";
 import { FIELD_LENGTH } from "../utils/dbf";
 import { NInput, NForm, NFormItem, NInputNumber, NDatePicker, NSelect, NCollapse, NCollapseItem } from "naive-ui";
-import { useMessage } from "naive-ui";
+import { useMessage, useDialog } from "naive-ui";
 import { create_text_style, create_polygon_style } from "../utils/ol";
 
 
 const message = useMessage();
+const dialog = useDialog();
 const { fields, vec_layer } = defineProps(["fields", "vec_layer"]);
 const emit = defineEmits(['update-stage']);
 const select_stage = ref("初步调查");
@@ -117,4 +116,42 @@ function handleUpdateValue() {
   }
 
 }
+
+function check_field_input() {
+  let {
+    DKMC,
+    DKDM,
+    XZQDM,
+    XZQMC,
+    YDMJ,
+    DH,
+    SCRQ = null,
+    SCDW = null,
+    BZ = null,
+  } = fields;
+  const requiredFields = { DKMC, DKDM, XZQDM, XZQMC, YDMJ, DH };
+  for (const field of Object.keys(requiredFields)) {
+    if (requiredFields[field] === undefined || requiredFields[field] === "") {
+      dialog.error({
+        title: "错误",
+        content: `${field} 为空`,
+        positiveText: "确定",
+        maskClosable: false,
+      });
+      return false;
+    }
+  }
+  if (!(25 <= DH && DH <= 45)) {
+    dialog.error({
+      title: "错误",
+      content: "带号范围应在25~45之间",
+      positiveText: "确定",
+      maskClosable: false,
+    });
+    return false;
+  }
+  return true;
+}
+
+defineExpose({ check_field_input })
 </script>

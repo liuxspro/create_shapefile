@@ -1,7 +1,6 @@
 <script setup>
 import { RouterLink } from "vue-router";
-import { computed } from "vue"
-const isDev = computed(() => import.meta.env.DEV)
+const isDev = import.meta.env.DEV;
 </script>
 
 <template>

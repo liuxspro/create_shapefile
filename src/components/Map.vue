@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineAsyncComponent, computed } from "vue";
+import { ref, defineAsyncComponent } from "vue";
 import { fromLonLat } from "ol/proj";
 import { centerOfMass } from "@turf/center-of-mass";
 
@@ -7,7 +7,8 @@ const FieldInput = defineAsyncComponent(() => import("./FieldInput.vue"));
 const OlMap = defineAsyncComponent(() => import("./OlMap.vue"));
 
 const mapRef = ref(null);
-const isDev = computed(() => import.meta.env.DEV);
+const fieldRef = ref(null)
+const isDev = import.meta.env.DEV;
 
 import { NButton } from "naive-ui";
 import { useDialog } from "naive-ui";
@@ -135,28 +136,14 @@ function correct_fields(fields) {
     SCDW = null,
     BZ = null,
   } = fields;
-  const requiredFields = { DKMC, DKDM, XZQDM, XZQMC, YDMJ, DH };
-
-  for (const field of Object.keys(requiredFields)) {
-    if (requiredFields[field] === undefined || requiredFields[field] === "") {
-      dialog.error({
-        title: "错误",
-        content: `${field} 为空`,
-        positiveText: "确定",
-        maskClosable: false,
-      });
-      return;
-    }
-  }
-  if (!(25 <= DH && DH <= 45)) {
-    alert("带号范围应在25~45之间");
-    return;
-  }
-
   return { DKMC, DKDM, XZQMC, XZQDM, YDMJ, DH, SCRQ, SCDW, BZ };
 }
 
 function create_shp() {
+  const field_is_ok = fieldRef.value.check_field_input();
+  if (!field_is_ok) {
+    return
+  }
   const fields = correct_fields(input_values.value);
   const points = upload_points.value.proj_points;
   if (fields) {
@@ -215,7 +202,7 @@ function create_shp() {
         </div>
       </div>
       <!-- 填写字段 -->
-      <FieldInput :fields="input_values" :vec_layer="vec_layer" @update-stage="handleStageUpdate" />
+      <FieldInput :fields="input_values" :vec_layer="vec_layer" @update-stage="handleStageUpdate" ref="fieldRef" />
       <div class="mb-2 p-1 lg:p-4 border border-slate-300 rounded-md text-center">
         <n-button quaternary type="success" class="w-full" @click="create_shp" :disabled="!upload_file_data.uploaded">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 256 256">
