@@ -6,30 +6,17 @@ import KML from "ol/format/KML.js";
 
 import * as shpwrite from "@mapbox/shp-write";
 import JSZip from "jszip";
-import { saveAs } from "file-saver";
+import { fileSave } from "browser-fs-access";
 import proj4 from "proj4";
 
-import { create_dbf } from "../utils/dbfwrite";
+import { create_dbf } from "./dbf";
 import { create_polygon_style } from "./ol";
-import { get_digits, getEsriWKT_3_Degree } from "@liuxspro/utils";
-
-// 根据经度获取带号
-function get_zone(longitude) {
-  return Math.round(longitude / 3);
-}
-
-function clear_vector_layer(map) {
-  // 获取所有图层
-  const allLayers = map.getAllLayers();
-  // 遍历图层并移除 VectorLayer
-  allLayers.forEach((layer) => {
-    // 判断图层类型是否为 TileLayer
-    if (layer instanceof VectorLayer) {
-      // 移除 TileLayer
-      map.removeLayer(layer);
-    }
-  });
-}
+import {
+  calc_signed_area,
+  get_cgcs2000_wkt,
+  get_zone,
+} from "@liuxspro/libs/geo";
+import { get_digits } from "@liuxspro/libs/utils";
 
 function create_geojson_from_points(points, properties = {}) {
   return {
@@ -82,20 +69,6 @@ function get_points_from_kml(kml_data) {
   return coord_list;
 }
 
-function calc_area(points) {
-  // 使用有向面积（鞋带公式）计算多边形面积
-  let area = 0;
-  const n = points.length;
-
-  for (let i = 0; i < n; i++) {
-    const j = (i + 1) % n;
-    const [xi, yi] = points[i];
-    const [xj, yj] = points[j];
-    area += xi * yj - xj * yi;
-  }
-  return parseFloat((area / 2).toFixed(2));
-}
-
 function get_points_from_csv(csv_data) {
   const points = csv_data.map((record) => get_points_from_csv_record(record));
   return points;
@@ -140,25 +113,33 @@ function create_vector_layer_from_geojson(geojson_data, trans = true) {
   return vectorLayer;
 }
 
+function create_zip(filename, shp_files, dbf_data, prj) {
+  let zip = new JSZip();
+  let zip_target = zip.folder(filename);
+  zip_target.file(`${filename}.shp`, shp_files.shp.buffer);
+  zip_target.file(`${filename}.shx`, shp_files.shx.buffer);
+  zip_target.file(`${filename}.dbf`, dbf_data.buffer);
+  zip_target.file(`${filename}.cpg`, "UTF-8");
+  zip_target.file(`${filename}.prj`, prj);
+  return zip.generateAsync({ type: "blob", compression: "DEFLATE" });
+}
+
 function generateAndDownloadZip(points_data, WKT, select_stage, fields) {
   // 根据字段生成dbf文件
   const dbf_data = create_dbf(fields);
   // 使用shpwrite生成shp和shx文件
   const points = [[points_data]];
   const filename = `${select_stage}${fields.DKDM}`;
-  shpwrite.write([{}], "POLYGON", points, (err, files) => {
-    let zip = new JSZip();
-    let zip_target = zip.folder(filename);
-    zip_target.file(`${filename}.shp`, files.shp.buffer);
-    zip_target.file(`${filename}.shx`, files.shx.buffer);
-    zip_target.file(`${filename}.dbf`, dbf_data.buffer);
-    zip_target.file(`${filename}.cpg`, "UTF-8");
-    zip_target.file(`${filename}.prj`, WKT);
-    zip
-      .generateAsync({ type: "blob", compression: "DEFLATE" })
-      .then(function (content) {
-        saveAs(content, `${filename}.zip`);
-      });
+  shpwrite.write([{}], "POLYGON", points, async (err, files) => {
+    if (err) throw err;
+    const zip_data = await create_zip(filename, files, dbf_data, WKT);
+    fileSave(zip_data, {
+      fileName: filename,
+      extensions: [".zip"],
+      startIn: "downloads",
+    }).catch((err) => {
+      console.log("取消保存", err);
+    });
   });
 }
 
@@ -250,7 +231,7 @@ function parse_coordinates_list(coordinates_list) {
     if (get_digits(y) == 8) {
       //含带号的坐标
       DH = parseInt(y.toString().slice(0, 2));
-      WKT = getEsriWKT_3_Degree(DH);
+      WKT = get_cgcs2000_wkt(DH);
       proj_points = coordinates_list.map((p) => {
         // 满足 GIS 坐标系定义, 交换 X Y 位置
         return [p[1], p[0]];
@@ -261,7 +242,8 @@ function parse_coordinates_list(coordinates_list) {
       });
     } else if (get_digits(y) == 6) {
       // 如何处理无带号的坐标呢 TODO
-      console.log("无带号的坐标", x, y);
+      // console.log("无带号的坐标", x, y);
+      throw new Error("无法处理无带号的坐标");
     }
   } else {
     // 经纬度坐标
@@ -269,7 +251,7 @@ function parse_coordinates_list(coordinates_list) {
       return [p[0], p[1]];
     });
     DH = get_zone(x);
-    WKT = getEsriWKT_3_Degree(DH);
+    WKT = get_cgcs2000_wkt(DH);
     proj_points = coordinates_list.map((p) => {
       // 从经纬度转为投影坐标
       // 经过 proj4 转化的坐标 X Y 属性是满足 GIS 要求的,不需要交换位置了
@@ -280,7 +262,7 @@ function parse_coordinates_list(coordinates_list) {
   // 鞋带公式需要保证点的顺序是逆时针的
   // 这里计算出来的面积为正说明是逆时针方向，需要改为顺时针方向
   // 如果面积为负，说明是顺时针方向，无需改动
-  const area = calc_area(proj_points);
+  const area = calc_signed_area(proj_points);
   if (area > 0) {
     proj_points = proj_points.toReversed();
     lon_lat_points = lon_lat_points.toReversed();
@@ -289,6 +271,7 @@ function parse_coordinates_list(coordinates_list) {
   } else {
     ydmj = -area;
   }
+  ydmj = parseFloat(ydmj.toFixed(2));
   return {
     lon_lat_points,
     proj_points,
@@ -310,7 +293,6 @@ function convert_coordinates_list_as_csv_data(coordinates_list) {
 }
 
 export {
-  clear_vector_layer,
   convert_coordinates_list_as_csv_data,
   create_geojson_from_points,
   create_vector_layer_from_geojson,

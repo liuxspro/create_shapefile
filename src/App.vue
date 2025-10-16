@@ -1,7 +1,8 @@
 <script setup>
-import { computed } from "vue";
-import NavBar from "./components/NavBar.vue";
+import { computed, defineAsyncComponent } from "vue";
 import { RouterView } from "vue-router";
+
+const NavBar = defineAsyncComponent(() => import("./components/NavBar.vue"));
 
 import { useOsTheme, darkTheme, NConfigProvider, NDialogProvider, zhCN, dateZhCN, NMessageProvider } from "naive-ui";
 

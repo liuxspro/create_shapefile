@@ -1,11 +1,10 @@
 @import "ol/ol.css";
 @import "ol-layerswitcher/dist/ol-layerswitcher.css";
+
 /* @tailwind base; */
 @layer {
-  @tailwind base;
+  @import "tailwindcss";
 }
-@tailwind components;
-@tailwind utilities;
 
 html,
 body {
@@ -36,4 +35,13 @@ body {
   height: 1.4em;
   background-position: center;
   background-size: cover;
+}
+
+h3 {
+  @apply font-semibold text-lg mt-4 text-gray-900 dark:text-gray-300;
+}
+
+code.field_name {
+  @apply p-1 border bg-gray-200 rounded-md m-1 dark:bg-slate-500 border-gray-200
+    dark:border-slate-400 font-sans whitespace-nowrap;
 }
