@@ -52,7 +52,7 @@ const pwa = VitePWA({
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
   const isDev = command === "serve";
-  console.log("Development Mode");
+  console.log(`Build in ${isDev ? "Development" : "Production"}`);
   return {
     plugins: [
       vue(),
