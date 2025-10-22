@@ -40,8 +40,8 @@
           </div>
         </div>
       </div>
-      <h4 class="pl-2 border-l-4 border-slate-300 my-1">KML 文件格式</h4>
-      <p>也可以直接使用地块的 kml 文件 （面文件,线文件和点文件可能会出问题）.</p>
+      <h4 class="pl-2 border-l-4 border-slate-300 my-1">KML/KMZ 文件</h4>
+      <p>也可以直接使用地块的 kml/kmz 文件.</p>
     </div>
     <div>
       <h3>2. 填写字段信息</h3>
