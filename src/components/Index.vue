@@ -1,6 +1,7 @@
 <script setup>
 import { RouterLink } from "vue-router";
 import { ref, onMounted, defineAsyncComponent } from "vue";
+import { NPopover } from "naive-ui";
 
 const isDev = import.meta.env.DEV;
 
@@ -56,7 +57,7 @@ onMounted(() => {
           </n-popover>
         </div>
       </div>
-      <div id=" action" class="my-2">
+      <div id="action" class="my-2">
         <RouterLink to="/create">
           <button class="py-2 px-8 mt-8 border border-stone-400 rounded-md hover:bg-gray-100">
             开始制作
