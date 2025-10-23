@@ -2,13 +2,15 @@
 import { ref, defineAsyncComponent } from "vue";
 import { fromLonLat } from "ol/proj";
 import { centerOfMass } from "@turf/center-of-mass";
+import { isTauri } from "@tauri-apps/api/core";
 
 const FieldInput = defineAsyncComponent(() => import("./FieldInput.vue"));
 const OlMap = defineAsyncComponent(() => import("./OlMap.vue"));
 
 const mapRef = ref(null);
 const fieldRef = ref(null)
-const isDev = import.meta.env.DEV;
+const isDev = import.meta.env.DEV || isTauri();
+
 
 import { NButton } from "naive-ui";
 import { useDialog } from "naive-ui";
