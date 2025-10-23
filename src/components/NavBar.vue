@@ -1,5 +1,7 @@
 <script setup>
 import { RouterLink } from "vue-router";
+import { isTauri } from "@tauri-apps/api/core";
+
 const isDev = import.meta.env.DEV;
 </script>
 
@@ -12,6 +14,7 @@ const isDev = import.meta.env.DEV;
           <h1 class="text-lg pl-2 font-semibold">地块边界文件制作</h1>
         </RouterLink>
         <sup v-if="isDev" class="ml-2 text-blue-800">开发模式</sup>
+        <sup v-if="isTauri()" class="ml-2 text-blue-800">离线版</sup>
       </div>
     </div>
   </div>

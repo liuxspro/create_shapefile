@@ -49,10 +49,14 @@ const pwa = VitePWA({
   },
 });
 
+const host = process.env.TAURI_DEV_HOST;
+
 // https://vitejs.dev/config/
-export default defineConfig(({ command }) => {
-  const isDev = command === "serve";
-  console.log(`Build in ${isDev ? "Development" : "Production"}`);
+export default defineConfig(({ command, mode }) => {
+  console.log("Mode      :", mode);
+  // const isDev = command === "serve";
+  const enablePWA = mode === "production";
+  console.log("Enable PWA:", enablePWA);
   return {
     plugins: [
       vue(),
@@ -62,11 +66,27 @@ export default defineConfig(({ command }) => {
         __version__: version,
         preventAssignment: true,
       }),
-      !isDev && pwa,
+      enablePWA && pwa,
     ].filter(Boolean),
     resolve: {
       alias: {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
+      },
+    },
+    server: {
+      port: 1420,
+      strictPort: true,
+      host: host || false,
+      hmr: host
+        ? {
+          protocol: "ws",
+          host,
+          port: 1421,
+        }
+        : undefined,
+      watch: {
+        // 3. tell Vite to ignore watching `src-tauri`
+        ignored: ["**/src-tauri/**"],
       },
     },
   };

@@ -2,8 +2,9 @@
 import { RouterLink } from "vue-router";
 import { ref, onMounted, defineAsyncComponent } from "vue";
 import { NPopover } from "naive-ui";
+import { isTauri } from "@tauri-apps/api/core";
 
-const isDev = import.meta.env.DEV;
+const isDev = import.meta.env.DEV || isTauri();
 
 const Guide = defineAsyncComponent(() => import("./Guide.vue"))
 const SFooter = defineAsyncComponent(() => import("./Footer.vue"))
@@ -17,9 +18,13 @@ async function get_create_num() {
 }
 
 onMounted(() => {
-  get_create_num().then((value) => {
-    create_num.value = value;
-  });
+  if (!isDev) {
+    get_create_num().then((value) => {
+      console.log("get num")
+      create_num.value = value;
+    });
+  }
+
 });
 </script>
 

@@ -4,14 +4,16 @@
   "version": "0.1.2",
   "type": "module",
   "scripts": {
-    "dev": "vite --host --port 5656",
+    "dev": "vite",
     "build": "vite build",
+    "build_app": "vite build --mode tauri",
     "preview": "vite preview"
   },
   "dependencies": {
     "@liuxspro/libs": "jsr:^0.1.5",
     "@liuxspro/ol-north-arrow": "^0.1.1",
     "@mapbox/shp-write": "^0.4.3",
+    "@tauri-apps/api": "^2.9.0",
     "@turf/center-of-mass": "^7.2.0",
     "browser-fs-access": "^0.38.0",
     "jszip": "^3.10.1",
@@ -25,6 +27,7 @@
   "devDependencies": {
     "@rollup/plugin-replace": "^5.0.7",
     "@tailwindcss/postcss": "^4.1.14",
+    "@tauri-apps/cli": "^2.9.1",
     "@vitejs/plugin-vue": "^4.6.2",
     "naive-ui": "^2.43.1",
     "postcss": "^8.5.6",
