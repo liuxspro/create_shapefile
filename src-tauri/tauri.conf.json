@@ -7,7 +7,8 @@
     "frontendDist": "../dist",
     "devUrl": "http://localhost:1420",
     "beforeDevCommand": "pnpm dev",
-    "beforeBuildCommand": "pnpm build_app"
+    "beforeBuildCommand": "pnpm build_app",
+    "removeUnusedCommands": true
   },
   "app": {
     "windows": [
@@ -24,7 +25,7 @@
     }
   },
   "bundle": {
-    "active": true,
+    "active": false,
     "targets": "all",
     "icon": ["icons/128x128.png", "icons/icon.icns", "icons/icon.ico"]
   }
