@@ -37,7 +37,7 @@ onMounted(() => {
       <div class="mt-4 text-2xl text-center mb-8">
         <p>地块边界文件制作</p>
       </div>
-      <div id="features">
+      <div id="features" v-if="!isTauri()">
         <div class="p-2">
           <span>✨ 满足</span>
           <a href="http://114.251.10.109/page/landuserlogin.html" target="_blank" class="text-blue-500 my-1">
