@@ -264,8 +264,10 @@ function parse_coordinates_list(coordinates_list) {
   // 如果面积为负，说明是顺时针方向，无需改动
   const area = calc_signed_area(proj_points);
   if (area > 0) {
-    proj_points = proj_points.toReversed();
-    lon_lat_points = lon_lat_points.toReversed();
+    // proj_points = proj_points.toReversed();
+    // lon_lat_points = lon_lat_points.toReversed();
+    proj_points = proj_points.slice().reverse();
+    lon_lat_points = lon_lat_points.slice().reverse();
     console.log("修复不正确的环走向");
     ydmj = area;
   } else {
