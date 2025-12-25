@@ -73,12 +73,21 @@
 
 <script setup>
 import { ref } from "vue";
-import { FIELD_LENGTH } from "../utils/dbf";
 import { NInput, NForm, NFormItem, NInputNumber, NDatePicker, NSelect, NCollapse, NCollapseItem } from "naive-ui";
 import { useMessage, useDialog } from "naive-ui";
 import { create_text_style, create_polygon_style } from "../utils/ol";
 
-
+const FIELD_LENGTH = {
+  DKMC: 254,
+  DKDM: 100,
+  XZQDM: 12,
+  XZQMC: 100,
+  YDMJ: 17,
+  DH: 16,
+  SCRQ: 8,
+  SCDW: 254,
+  BZ: 254,
+};
 const message = useMessage();
 const dialog = useDialog();
 const { fields, vec_layer } = defineProps(["fields", "vec_layer"]);
