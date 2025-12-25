@@ -4,19 +4,34 @@ import { Vector as VectorLayer } from "ol/layer";
 import { transform } from "ol/proj";
 import KML from "ol/format/KML.js";
 
-import * as shpwrite from "@mapbox/shp-write";
-import JSZip from "jszip";
 import { fileSave } from "browser-fs-access";
 import proj4 from "proj4";
 
-import { create_dbf } from "./dbf";
 import { create_polygon_style } from "./ol";
 import {
   calc_signed_area,
   get_cgcs2000_wkt,
   get_zone,
 } from "@liuxspro/libs/geo";
-import { get_digits } from "@liuxspro/libs/utils";
+
+// import { create_shpzip } from "./shp";
+import { create_bjwj } from "@liuxspro/create-shp";
+
+export function create_geojson(polygons, properties = {}) {
+  return {
+    type: "FeatureCollection",
+    features: [
+      {
+        type: "Feature",
+        properties,
+        geometry: {
+          type: "MultiPolygon",
+          coordinates: [...polygons],
+        },
+      },
+    ],
+  };
+}
 
 function create_geojson_from_points(points, properties = {}) {
   return {
@@ -26,8 +41,8 @@ function create_geojson_from_points(points, properties = {}) {
         type: "Feature",
         properties,
         geometry: {
+          type: "MultiPolygon",
           coordinates: [points],
-          type: "Polygon",
         },
       },
     ],
@@ -45,13 +60,24 @@ async function get_kmldata_from_kmz(buffer) {
   return kmlData;
 }
 
+function handle_kml(kml_data) {
+  const kmlFormat = new KML();
+  const kmlFeatures = kmlFormat.readFeatures(kml_data, {});
+}
+
 function get_points_from_kml(kml_data) {
   const kmlFormat = new KML();
   const kmlFeatures = kmlFormat.readFeatures(kml_data, {
     dataProjection: "EPSG:4326", // 数据投影
     featureProjection: "EPSG:4326", // 地图投影
   });
+  console.log(kmlFeatures.length);
+  console.log(kmlFeatures[0].getGeometry().getCoordinates());
   const geom = kmlFeatures[0].getGeometry();
+  const g = kmlFeatures.map((f) => {
+    return f.getGeometry().getCoordinates()[0];
+  });
+  // console.log(g);
   const gemo_type = geom.getType();
   let coord_list;
   if (["Polygon", "MultiLineString"].includes(gemo_type)) {
@@ -69,10 +95,6 @@ function get_points_from_kml(kml_data) {
   return coord_list;
 }
 
-function get_points_from_csv(csv_data) {
-  const points = csv_data.map((record) => get_points_from_csv_record(record));
-  return points;
-}
 function create_vector_layer_from_kml(kml_data) {
   const kmlFormat = new KML();
   // 通过 KML 格式对象解析数据
@@ -113,33 +135,22 @@ function create_vector_layer_from_geojson(geojson_data, trans = true) {
   return vectorLayer;
 }
 
-function create_zip(filename, shp_files, dbf_data, prj) {
-  let zip = new JSZip();
-  let zip_target = zip.folder(filename);
-  zip_target.file(`${filename}.shp`, shp_files.shp.buffer);
-  zip_target.file(`${filename}.shx`, shp_files.shx.buffer);
-  zip_target.file(`${filename}.dbf`, dbf_data.buffer);
-  zip_target.file(`${filename}.cpg`, "UTF-8");
-  zip_target.file(`${filename}.prj`, prj);
-  return zip.generateAsync({ type: "blob", compression: "DEFLATE" });
-}
-
-function generateAndDownloadZip(points_data, WKT, select_stage, fields) {
+async function generateAndDownloadZip(points_data, WKT, select_stage, fields) {
   // 根据字段生成dbf文件
-  const dbf_data = create_dbf(fields);
+  console.log(fields);
   // 使用shpwrite生成shp和shx文件
   const points = [[points_data]];
   const filename = `${select_stage}${fields.DKDM}`;
-  shpwrite.write([{}], "POLYGON", points, async (err, files) => {
-    if (err) throw err;
-    const zip_data = await create_zip(filename, files, dbf_data, WKT);
-    fileSave(zip_data, {
-      fileName: filename,
-      extensions: [".zip"],
-      startIn: "downloads",
-    }).catch((err) => {
-      console.log("取消保存", err);
-    });
+  console.log(points);
+  // const zipdata = await create_shpzip(filename, fields, points, WKT);
+  // const zipdata = await create_bjwj(select_stage,fields,)
+  console.log(zipdata);
+  fileSave(zipdata, {
+    fileName: filename,
+    extensions: [".zip"],
+    startIn: "downloads",
+  }).catch((err) => {
+    console.log("取消保存", err);
   });
 }
 
@@ -165,32 +176,6 @@ function correct_points_order(points) {
   return [real_x, real_y];
 }
 
-function get_points_from_csv_record(record) {
-  // 解析每一个 csv 记录,判断是经纬度还是投影坐标系, 并调整投影坐标 X Y 的顺序
-  const keys = Object.keys(record);
-  if (keys.length == 3) {
-    const x = record[keys[1]];
-    const y = record[keys[2]];
-    let real_x;
-    let real_y;
-    if (x > 200) {
-      //投影坐标
-      if (get_digits(x) == 7) {
-        // X 为7位数
-        real_x = x;
-        real_y = y;
-      } else {
-        real_x = y;
-        real_y = x;
-      }
-    } else {
-      real_x = x;
-      real_y = y;
-    }
-    return [real_x, real_y];
-  }
-}
-
 function parse_coordinates_list(coordinates_list) {
   /**
    * coordinates_list: [[117.51307,34.307738],[],[],[]..]
@@ -205,6 +190,7 @@ function parse_coordinates_list(coordinates_list) {
    * 输入 Y 为东坐标（横坐标）, 需要+500000, 有带号即为8位, 无带号为6位
    * 但是在 GIS 里面一般X是横坐标（需要带号）, Y为纵坐标（恒正, 7位数）
    * 经过 proj4 转化的坐标 X Y 属性是满足 GIS 要求的,不需要交换位置了
+   * proj4 坐标顺序是[东坐标(加带号8位数) , 北坐标(7位)]
    */
   // 检查是否闭合
   // 如果第一个点和最后一个点不相同, 则需要闭合多边形
@@ -301,7 +287,6 @@ export {
   create_vector_layer_from_kml,
   generateAndDownloadZip,
   get_kmldata_from_kmz,
-  get_points_from_csv,
   get_points_from_kml,
   parse_coordinates_list,
 };

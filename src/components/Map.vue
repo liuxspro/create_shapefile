@@ -1,114 +1,68 @@
 <script setup>
 import { ref, defineAsyncComponent } from "vue";
-import { fromLonLat } from "ol/proj";
 import { centerOfMass } from "@turf/center-of-mass";
+import { parse_mploygon } from "../utils/helper";
+import { parse_upload_files } from "../utils/sources";
+import { merge_ploygon, correct_fields } from "../utils/helper";
 import { isTauri } from "@tauri-apps/api/core";
+import { create_geojson, create_vector_layer_from_geojson } from "../utils";
+import { create_bjwj } from "@liuxspro/create-shp";
+import { fileSave } from "browser-fs-access";
+import { NButton, useMessage } from "naive-ui";
+const message = useMessage();
 
 const FieldInput = defineAsyncComponent(() => import("./FieldInput.vue"));
 const OlMap = defineAsyncComponent(() => import("./OlMap.vue"));
 
 const mapRef = ref(null);
-const fieldRef = ref(null)
+const fieldRef = ref(null);
 const isDev = import.meta.env.DEV || isTauri();
-
-
-import { NButton } from "naive-ui";
-import { useDialog } from "naive-ui";
-const dialog = useDialog();
-
-import Papa from "papaparse";
-
-import {
-  create_geojson_from_points,
-  create_vector_layer_from_geojson,
-  generateAndDownloadZip,
-  get_points_from_csv,
-  get_points_from_kml,
-  parse_coordinates_list,
-  get_kmldata_from_kmz,
-} from "../utils";
-
-const upload_file_data = ref({ uploaded: false, file: {}, center: [0, 0] });
-const stage = ref("初步调查");
-
+const upload_file_data = ref({ uploaded: false, files: {}, center: [0, 0] });
+const stage = ref("初步调查"); // 调查阶段
 const input_values = ref({ DKDM: "" }); // 保存表单 input (字段)的值
-const upload_points = ref({
-  lon_lat_points: [],
-  proj_points: [],
+
+const upload_mpolygon = ref({
+  cgcs: [],
+  lonlat: [],
+  mercator: [],
   WKT: "",
   DH: 0,
   ydmj: 0,
-}); // 保存点位信息
+});
+
 const vec_layer = ref();
 
 async function handle_files() {
   const file_list = this.files;
-  const file = file_list[0];
-  let points;
-  const file_type = file.name.split(".")[1];
-  upload_file_data.value.file["name"] = file.name;
-  upload_file_data.value.file["type"] = file_type;
-  if (file_type == "csv") {
-    const textdata = await file.text();
-    // https://www.papaparse.com/docs#csv-to-json
-    const csv_data = Papa.parse(textdata, {
-      skipEmptyLines: true, // 跳过空行
-      header: true, // 如果CSV文件包含标题行，请设置为 true
-      dynamicTyping: true, // 尝试将字段自动转换为数值类型
-    });
-    points = get_points_from_csv(csv_data.data);
-  } else if (file_type == "kml") {
-    const kmlData = await file.text();
-    points = get_points_from_kml(kmlData);
-    if (points.length <= 2) {
-      upload_file_data.value.uploaded = false;
-      dialog.error({
-        title: "错误",
-        content: "至少需要3个点",
-        positiveText: "确定",
-        maskClosable: false,
-      });
-      throw new Error("至少需要3个点");
-    }
-  } else if (file_type == "kmz") {
-    // https://developer.mozilla.org/zh-CN/docs/Web/API/File
-    const kmzData = await file.arrayBuffer();
-    const kml_data = await get_kmldata_from_kmz(kmzData);
-    points = get_points_from_kml(kml_data);
-    if (points.length <= 2) {
-      upload_file_data.value.uploaded = false;
-      dialog.error({
-        title: "错误",
-        content: "至少需要3个点",
-        positiveText: "确定",
-        maskClosable: false,
-      });
-      throw new Error("至少需要3个点");
-    }
-  } else {
-    dialog.error({
-      title: "错误",
-      content: "不支持的文件类型",
-      positiveText: "确定",
-      maskClosable: false,
-    });
-    upload_file_data.value.uploaded = false;
-    return;
-  }
-  upload_points.value = parse_coordinates_list(points);
-  // console.log("上传的点位信息:", upload_points);
-  input_values.value["DH"] = upload_points.value.DH; // 自动填入带号
-  input_values.value["YDMJ"] = upload_points.value.ydmj; // 自动填入地块面积
-  const upload_ploygon = create_geojson_from_points(
-    upload_points.value.lon_lat_points.map((i) => fromLonLat(i))
-  );
-  const center = centerOfMass(
-    create_geojson_from_points(upload_points.value.lon_lat_points)
-  ).geometry.coordinates;
-  vec_layer.value = create_vector_layer_from_geojson(upload_ploygon, false);
+  console.log(file_list);
+  const file_data = await parse_upload_files(file_list);
+  upload_file_data.value.files = file_data.map((i) => i.name);
+  console.log(upload_file_data.value.files)
+  console.log("File Data:", file_data);
+  const mpolygon = merge_ploygon(file_data);
+  console.log("Multi Polygons:", mpolygon);
+  const parsed = parse_mploygon(mpolygon);
+
+  console.log("Parsed:", parsed);
+  upload_mpolygon.value.cgcs = parsed.cgcs;
+  upload_mpolygon.value.WKT = parsed.wkt;
+  input_values.value.DH = parsed.dh;
+  input_values.value.YDMJ = Math.abs(parsed.area);
+
+  const gjson = create_geojson(parsed.mercator);
+  const center = centerOfMass(create_geojson(parsed.lonlat)).geometry
+    .coordinates;
+  upload_file_data.value.center = center.map((i) => i.toFixed(6)).toString();
+
+  // const file = file_list[0];
+  // const file_type = file.name.split(".")[1];
+  // upload_file_data.value.file["name"] = file.name;
+  // upload_file_data.value.file["type"] = file_type;
+
+  // 添加矢量图层到 Map
+  vec_layer.value = create_vector_layer_from_geojson(gjson, false);
   mapRef.value.add_vec_layer(vec_layer.value);
   upload_file_data.value.uploaded = true;
-  upload_file_data.value.center = center.map((i) => i.toFixed(6)).toString();
 }
 
 const handleStageUpdate = (value) => {
@@ -120,41 +74,37 @@ function load_file() {
   upload_file_data.value.uploaded = false;
   const input = document.createElement("input");
   input.type = "file";
-  input.accept = ".csv, .kml, .kmz";
+  input.accept = ".csv";
+  input.multiple = true;
   input.addEventListener("change", handle_files);
   input.click();
 }
 
-function correct_fields(fields) {
-  // 验证字段
-  let {
-    DKMC,
-    DKDM,
-    XZQDM,
-    XZQMC,
-    YDMJ,
-    DH,
-    SCRQ = null,
-    SCDW = null,
-    BZ = null,
-  } = fields;
-  return { DKMC, DKDM, XZQMC, XZQDM, YDMJ, DH, SCRQ, SCDW, BZ };
-}
-
-function create_shp() {
+async function create_shp() {
   const field_is_ok = fieldRef.value.check_field_input();
   if (!field_is_ok) {
-    return
+    return;
   }
   const fields = correct_fields(input_values.value);
-  const points = upload_points.value.proj_points;
+
   if (fields) {
-    generateAndDownloadZip(
-      points,
-      upload_points.value.WKT,
+    const filename = `${stage.value}${fields.DKDM}`;
+    const bjwj = await create_bjwj(
       stage.value,
-      fields
+      fields,
+      upload_mpolygon.value.cgcs,
+      upload_mpolygon.value.WKT
     );
+    const save = await fileSave(bjwj, {
+      fileName: filename,
+      extensions: [".zip"],
+      startIn: "downloads",
+    }).catch((err) => {
+      console.log("取消保存", err);
+    });
+    if (save) {
+      message.success(`成功创建 ${save.name}`, { duration: 5000 });
+    }
   }
   // 统计创建了多少个文件
   if (!isDev) {
@@ -191,9 +141,10 @@ function create_shp() {
         <div class="text-xs">
           <div>
             <span>当前文件: </span>
-            <code class="border border-slate-300 p-1 rounded-md">{{
-              upload_file_data.file.name
-            }}</code>
+            <div class="flex">
+              <code class="border border-slate-300 p-1 rounded-md mx-1" v-for="file in upload_file_data.files">
+          {{ file }}</code>
+            </div>
           </div>
           <div class="mt-3">
             <span>中心点坐标: </span>
