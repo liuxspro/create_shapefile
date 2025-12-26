@@ -15,7 +15,7 @@ export function parse_cgcs_mpolygon(mpolygon) {
 
   return {
     lonlat: lonlat,
-    cgcs: mpolygon.ensure_esri_standard(),
+    cgcs: mpolygon,
     area: Math.abs(round_to(mpolygon.get_area(), 2)),
     dh,
     wkt: get_cgcs2000_wkt(dh),
@@ -34,7 +34,7 @@ export function parse_lonlat_mpolygon(mpolygon) {
   const cgcs_mpolygon = mpolygon.transform(lonlat_to_cgcs);
   return {
     lonlat: mpolygon,
-    cgcs: cgcs_mpolygon.ensure_esri_standard(),
+    cgcs: cgcs_mpolygon,
     dh,
     area: Math.abs(round_to(cgcs_mpolygon.get_area(), 2)),
     wkt: get_cgcs2000_wkt(dh),
@@ -68,13 +68,23 @@ export function merge_ploygon(csv_parse_result) {
       } else {
         return f.polygon.ensure_geojson_standard();
       }
-    })
+    }),
   );
 }
 
 export function correct_fields(fields) {
   // 验证字段
-  let { DKMC, DKDM, XZQDM, XZQMC, YDMJ, DH, SCRQ = null, SCDW = null, BZ = null } = fields;
+  let {
+    DKMC,
+    DKDM,
+    XZQDM,
+    XZQMC,
+    YDMJ,
+    DH,
+    SCRQ = null,
+    SCDW = null,
+    BZ = null,
+  } = fields;
   return { DKMC, DKDM, XZQMC, XZQDM, YDMJ, DH, SCRQ, SCDW, BZ };
 }
 
