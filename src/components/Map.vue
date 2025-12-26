@@ -7,6 +7,7 @@ import { isTauri } from "@tauri-apps/api/core";
 import { create_bjwj } from "@liuxspro/create-shp";
 import { fileSave } from "browser-fs-access";
 import { NButton, useMessage } from "naive-ui";
+import { stats_add_count } from "../utils/stats";
 const message = useMessage();
 
 const FieldInput = defineAsyncComponent(() => import("./FieldInput.vue"));
@@ -97,14 +98,7 @@ async function create_shp() {
   }
   // 统计创建了多少个文件
   if (!isDev) {
-    fetch("https://service.liuxs.pro/count/add", { method: "get" })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Count updated successfully:", data);
-      })
-      .catch((error) => {
-        console.error("Error updating count:", error);
-      });
+    stats_add_count();
   }
 }
 </script>

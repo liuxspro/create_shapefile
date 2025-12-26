@@ -3,24 +3,18 @@ import { RouterLink } from "vue-router";
 import { ref, onMounted, defineAsyncComponent } from "vue";
 import { NPopover } from "naive-ui";
 import { isTauri } from "@tauri-apps/api/core";
-
+import { get_create_num } from "../utils/stats";
 const isDev = import.meta.env.DEV || isTauri();
 
 const Guide = defineAsyncComponent(() => import("./Guide.vue"))
 const SFooter = defineAsyncComponent(() => import("./Footer.vue"))
 
 let create_num = ref(0);
-async function get_create_num() {
-  const url = "https://service.liuxs.pro/count";
-  const r = await fetch(url);
-  const j = await r.json();
-  return j.created_num;
-}
+
 
 onMounted(() => {
   if (!isDev) {
     get_create_num().then((value) => {
-      console.log("get num")
       create_num.value = value;
     });
   }
