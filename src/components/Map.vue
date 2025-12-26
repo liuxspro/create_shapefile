@@ -89,8 +89,8 @@ async function create_shp() {
       fileName: filename,
       extensions: [".zip"],
       startIn: "downloads",
-    }).catch((err) => {
-      console.log("取消保存", err);
+    }).catch((_err) => {
+      message.error(`取消保存`, { duration: 5000 });
     });
     if (save) {
       message.success(`成功创建 ${save.name}`, { duration: 5000 });
