@@ -57,8 +57,19 @@ export function parse_mploygon(mpolygon) {
   }
 }
 
+// 合并为一个多边形, 并且将 CGCS2000 坐标转换为经纬度, 保证 GeoJSON 标准(保证面积计算正确)
 export function merge_ploygon(csv_parse_result) {
-  return new MultiPolygon(csv_parse_result.map((f) => f.polygon));
+  return new MultiPolygon(
+    csv_parse_result.map((f) => {
+      const point = f.polygon.coordinates[0][0];
+      const x = point[0];
+      if (x > 200) {
+        return f.polygon.transform(cgcs_to_lonlat).ensure_geojson_standard();
+      } else {
+        return f.polygon.ensure_geojson_standard();
+      }
+    })
+  );
 }
 
 export function correct_fields(fields) {
