@@ -4,10 +4,12 @@ import { baseMaps } from "../utils/ol";
 import { fromLonLat } from "ol/proj";
 import { Map, View } from "ol";
 import { ScaleLine, Zoom } from "ol/control";
-import { Vector as VectorLayer } from "ol/layer";
+
 import LayerSwitcher from "ol-layerswitcher";
 import { NorthArrow } from "@liuxspro/ol-north-arrow";
-
+import { create_geojson } from "../utils/helper";
+import { create_vector_layer_from_geojson, create_text_style, create_polygon_style } from "../utils/ol";
+import { Vector as VectorLayer } from "ol/layer";
 const map = ref(Map);
 
 onMounted(() => {
@@ -34,6 +36,23 @@ onMounted(() => {
   });
 });
 
+function add_multi_polygon_layer(multi_polygon) {
+  const gjson = create_geojson(multi_polygon);
+  const vec_layer = create_vector_layer_from_geojson(gjson, false);
+  add_vec_layer(vec_layer);
+}
+
+function change_veclayer_style(text) {
+  const all_layers = map.value.getAllLayers();
+  all_layers.forEach((layer) => {
+    if (layer instanceof VectorLayer) {
+      const ploygon_style = create_polygon_style();
+      ploygon_style.setText(create_text_style(text));
+      layer.setStyle(ploygon_style);
+    }
+  });
+}
+
 function add_vec_layer(vec_layer) {
   map.value.addLayer(vec_layer);
   map.value.getView().fit(vec_layer.getSource().getExtent());
@@ -51,7 +70,9 @@ function clear_vec_layer() {
 // 暴露方法给父组件
 defineExpose({
   add_vec_layer,
+  add_multi_polygon_layer,
   clear_vec_layer,
+  change_veclayer_style,
 });
 </script>
 

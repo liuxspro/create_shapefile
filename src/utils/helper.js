@@ -67,16 +67,27 @@ export function merge_ploygon(csv_parse_result) {
 
 export function correct_fields(fields) {
   // 验证字段
-  let {
-    DKMC,
-    DKDM,
-    XZQDM,
-    XZQMC,
-    YDMJ,
-    DH,
-    SCRQ = null,
-    SCDW = null,
-    BZ = null,
-  } = fields;
+  let { DKMC, DKDM, XZQDM, XZQMC, YDMJ, DH, SCRQ = null, SCDW = null, BZ = null } = fields;
   return { DKMC, DKDM, XZQMC, XZQDM, YDMJ, DH, SCRQ, SCDW, BZ };
+}
+
+/**
+ * 创建 GeoJSON 对象
+ * @param {Point[][][]} multi_polygon_coordinates
+ * @returns
+ */
+export function create_geojson(multi_polygon_coordinates) {
+  return {
+    type: "FeatureCollection",
+    features: [
+      {
+        type: "Feature",
+        properties: {},
+        geometry: {
+          type: "MultiPolygon",
+          coordinates: multi_polygon_coordinates,
+        },
+      },
+    ],
+  };
 }

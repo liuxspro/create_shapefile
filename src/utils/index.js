@@ -1,53 +1,12 @@
-import GeoJSON from "ol/format/GeoJSON.js";
 import { Vector as VectorSource } from "ol/source";
 import { Vector as VectorLayer } from "ol/layer";
-import { transform } from "ol/proj";
 import KML from "ol/format/KML.js";
 
 import { fileSave } from "browser-fs-access";
 import proj4 from "proj4";
 
 import { create_polygon_style } from "./ol";
-import {
-  calc_signed_area,
-  get_cgcs2000_wkt,
-  get_zone,
-} from "@liuxspro/libs/geo";
-
-// import { create_shpzip } from "./shp";
-import { create_bjwj } from "@liuxspro/create-shp";
-
-export function create_geojson(polygons, properties = {}) {
-  return {
-    type: "FeatureCollection",
-    features: [
-      {
-        type: "Feature",
-        properties,
-        geometry: {
-          type: "MultiPolygon",
-          coordinates: [...polygons],
-        },
-      },
-    ],
-  };
-}
-
-function create_geojson_from_points(points, properties = {}) {
-  return {
-    type: "FeatureCollection",
-    features: [
-      {
-        type: "Feature",
-        properties,
-        geometry: {
-          type: "MultiPolygon",
-          coordinates: [points],
-        },
-      },
-    ],
-  };
-}
+import { calc_signed_area, get_cgcs2000_wkt, get_zone } from "@liuxspro/libs/geo";
 
 async function get_kmldata_from_kmz(buffer) {
   const zip = new JSZip();
@@ -114,27 +73,6 @@ function create_vector_layer_from_kml(kml_data) {
   return vectorLayer;
 }
 
-function create_vector_layer_from_geojson(geojson_data, trans = true) {
-  if (trans) {
-    // 将坐标从 EPSG:4326 转换为 EPSG:3857
-    geojson_data.features.forEach((feature) => {
-      const coordinates = feature.geometry.coordinates[0].map((coord) =>
-        transform(coord, "EPSG:4326", "EPSG:3857")
-      );
-      feature.geometry.coordinates[0] = coordinates;
-    });
-  }
-  const vectorSource = new VectorSource({
-    features: new GeoJSON().readFeatures(geojson_data),
-  });
-
-  const vectorLayer = new VectorLayer({
-    source: vectorSource,
-    style: create_polygon_style(),
-  });
-  return vectorLayer;
-}
-
 async function generateAndDownloadZip(points_data, WKT, select_stage, fields) {
   // 根据字段生成dbf文件
   console.log(fields);
@@ -194,9 +132,7 @@ function parse_coordinates_list(coordinates_list) {
    */
   // 检查是否闭合
   // 如果第一个点和最后一个点不相同, 则需要闭合多边形
-  if (
-    coordinates_list[0][0] != coordinates_list[coordinates_list.length - 1][0]
-  ) {
+  if (coordinates_list[0][0] != coordinates_list[coordinates_list.length - 1][0]) {
     // 添加第1个点到结尾，以闭合多边形
     if (coordinates_list.length > 0 && coordinates_list[0].length >= 2) {
       coordinates_list.push(coordinates_list[0]);

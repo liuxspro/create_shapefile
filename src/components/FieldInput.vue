@@ -67,15 +67,12 @@
       </n-collapse-item>
     </n-collapse>
   </div>
-
-
 </template>
 
 <script setup>
 import { ref } from "vue";
 import { NInput, NForm, NFormItem, NInputNumber, NDatePicker, NSelect, NCollapse, NCollapseItem } from "naive-ui";
 import { useMessage, useDialog } from "naive-ui";
-import { create_text_style, create_polygon_style } from "../utils/ol";
 
 const FIELD_LENGTH = {
   DKMC: 254,
@@ -90,8 +87,8 @@ const FIELD_LENGTH = {
 };
 const message = useMessage();
 const dialog = useDialog();
-const { fields, vec_layer } = defineProps(["fields", "vec_layer"]);
-const emit = defineEmits(['update-stage']);
+const { fields } = defineProps(["fields"]);
+const emit = defineEmits(["update-stage", "update-name"]);
 const select_stage = ref("初步调查");
 
 const fileds_info = {
@@ -110,34 +107,17 @@ const stage_options = [
   { label: "详细调查", value: "详细调查" },
 ];
 
-
 function handleUpdateValue() {
   const DKDM = fields.DKDM;
   if (DKDM.length >= 14) {
     message.warning("地块代码长度应为13位");
   }
-  emit('update-stage', select_stage.value);
-  if (vec_layer) {
-    const display_text = `${select_stage.value}${DKDM}`;
-    const ploygon_style = create_polygon_style();
-    ploygon_style.setText(create_text_style(display_text));
-    vec_layer.setStyle(ploygon_style);
-  }
-
+  emit("update-stage", select_stage.value);
+  emit("update-name", `${select_stage.value}${DKDM}`);
 }
 
 function check_field_input() {
-  let {
-    DKMC,
-    DKDM,
-    XZQDM,
-    XZQMC,
-    YDMJ,
-    DH,
-    SCRQ = null,
-    SCDW = null,
-    BZ = null,
-  } = fields;
+  let { DKMC, DKDM, XZQDM, XZQMC, YDMJ, DH, SCRQ = null, SCDW = null, BZ = null } = fields;
   const requiredFields = { DKMC, DKDM, XZQDM, XZQMC, YDMJ, DH };
   for (const field of Object.keys(requiredFields)) {
     if (requiredFields[field] === undefined || requiredFields[field] === "") {
@@ -162,5 +142,5 @@ function check_field_input() {
   return true;
 }
 
-defineExpose({ check_field_input })
+defineExpose({ check_field_input });
 </script>
