@@ -7,9 +7,9 @@ import { ScaleLine, Zoom } from "ol/control";
 
 import LayerSwitcher from "ol-layerswitcher";
 import { NorthArrow } from "@liuxspro/ol-north-arrow";
-import { create_geojson } from "../utils/helper";
 import { create_vector_layer_from_geojson, create_text_style, create_polygon_style } from "../utils/ol";
 import { Vector as VectorLayer } from "ol/layer";
+import { create_geojson } from "../utils/helper";
 const map = ref(Map);
 
 onMounted(() => {
@@ -37,8 +37,9 @@ onMounted(() => {
 });
 
 function add_multi_polygon_layer(multi_polygon) {
-  const gjson = create_geojson(multi_polygon);
-  const vec_layer = create_vector_layer_from_geojson(gjson, false);
+  const mercator = multi_polygon.transform(([x, y]) => fromLonLat([x, y]));
+  const gjson = create_geojson(mercator);
+  const vec_layer = create_vector_layer_from_geojson(gjson);
   add_vec_layer(vec_layer);
 }
 

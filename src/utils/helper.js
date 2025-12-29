@@ -1,6 +1,5 @@
 import { get_cgcs2000_wkt, get_zone, MultiPolygon } from "@liuxspro/libs/geo";
 import { round_to } from "@liuxspro/libs/utils";
-import { fromLonLat } from "ol/proj";
 import { cgcs_to_lonlat, lonlat_to_cgcs } from "./transform";
 
 /**
@@ -13,11 +12,9 @@ export function parse_cgcs_mpolygon(mpolygon) {
   const x = point[0];
   const dh = parseInt(x.toString().slice(0, 2));
   const lonlat = mpolygon.transform(cgcs_to_lonlat);
-  const mercator = lonlat.transform(([x, y]) => fromLonLat([x, y]));
 
   return {
-    lonlat: lonlat.coordinates,
-    mercator: mercator.coordinates,
+    lonlat: lonlat,
     cgcs: mpolygon.ensure_esri_standard(),
     area: Math.abs(round_to(mpolygon.get_area(), 2)),
     dh,
@@ -36,8 +33,7 @@ export function parse_lonlat_mpolygon(mpolygon) {
   const dh = get_zone(x);
   const cgcs_mpolygon = mpolygon.transform(lonlat_to_cgcs);
   return {
-    lonlat: mpolygon.coordinates,
-    mercator: mpolygon.transform(([x, y]) => fromLonLat([x, y])).coordinates,
+    lonlat: mpolygon,
     cgcs: cgcs_mpolygon.ensure_esri_standard(),
     dh,
     area: Math.abs(round_to(cgcs_mpolygon.get_area(), 2)),
@@ -73,10 +69,10 @@ export function correct_fields(fields) {
 
 /**
  * 创建 GeoJSON 对象
- * @param {Point[][][]} multi_polygon_coordinates
+ * @param {MultiPolygon} multi_polygon
  * @returns
  */
-export function create_geojson(multi_polygon_coordinates) {
+export function create_geojson(multi_polygon) {
   return {
     type: "FeatureCollection",
     features: [
@@ -85,7 +81,7 @@ export function create_geojson(multi_polygon_coordinates) {
         properties: {},
         geometry: {
           type: "MultiPolygon",
-          coordinates: multi_polygon_coordinates,
+          coordinates: multi_polygon.coordinates,
         },
       },
     ],

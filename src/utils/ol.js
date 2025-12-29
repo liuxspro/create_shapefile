@@ -61,14 +61,7 @@ export function create_text_style(text) {
   });
 }
 
-export function create_vector_layer_from_geojson(geojson_data, trans = true) {
-  if (trans) {
-    // 将坐标从 EPSG:4326 转换为 EPSG:3857
-    geojson_data.features.forEach((feature) => {
-      const coordinates = feature.geometry.coordinates[0].map((coord) => transform(coord, "EPSG:4326", "EPSG:3857"));
-      feature.geometry.coordinates[0] = coordinates;
-    });
-  }
+export function create_vector_layer_from_geojson(geojson_data) {
   const vectorSource = new VectorSource({
     features: new GeoJSON().readFeatures(geojson_data),
   });
