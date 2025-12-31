@@ -1,6 +1,5 @@
 import { Vector as VectorSource } from "ol/source";
 import { Vector as VectorLayer } from "ol/layer";
-import KML from "ol/format/KML.js";
 
 import { fileSave } from "browser-fs-access";
 import proj4 from "proj4";

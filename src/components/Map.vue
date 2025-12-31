@@ -33,10 +33,9 @@ const upload_mpolygon = ref({
 
 async function handle_files() {
   const file_list = this.files;
-  console.log(file_list);
+  console.log("File List:", file_list);
   const file_data = await parse_upload_files(file_list);
   upload_file_data.value.files = file_data.map((i) => i.name);
-  console.log(upload_file_data.value.files);
   console.log("File Data:", file_data);
   const mpolygon = merge_ploygon(file_data);
   console.log("Multi Polygons:", mpolygon);
@@ -69,7 +68,7 @@ function load_file() {
   upload_file_data.value.uploaded = false;
   const input = document.createElement("input");
   input.type = "file";
-  input.accept = ".csv";
+  input.accept = ".csv, .kml";
   input.multiple = true;
   input.addEventListener("change", handle_files);
   input.click();
