@@ -1,5 +1,5 @@
 import { parse_csv_file } from "@liuxspro/create-shp";
-import { parse_kml_file } from "./kml";
+import { parse_kml_file, parse_kmz_file } from "./kml";
 
 /**
  * 处理Input 文件列表
@@ -17,6 +17,11 @@ export async function parse_upload_files(file_list) {
 
     if (file.type.includes("kml")) {
       const kml_result = await parse_kml_file(file);
+      result.push(kml_result);
+    }
+
+    if (file.type.includes("kmz")) {
+      const kml_result = await parse_kmz_file(file);
       result.push(kml_result);
     }
   }

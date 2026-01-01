@@ -26,6 +26,9 @@ importers:
       browser-fs-access:
         specifier: ^0.38.0
         version: 0.38.0
+      jszip:
+        specifier: ^3.10.1
+        version: 3.10.1
       ol:
         specifier: ^10.6.1
         version: 10.6.1

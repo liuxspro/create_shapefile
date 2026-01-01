@@ -68,7 +68,7 @@ function load_file() {
   upload_file_data.value.uploaded = false;
   const input = document.createElement("input");
   input.type = "file";
-  input.accept = ".csv, .kml";
+  input.accept = ".csv, .kml, .kmz";
   input.multiple = true;
   input.addEventListener("change", handle_files);
   input.click();

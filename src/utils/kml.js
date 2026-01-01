@@ -1,14 +1,41 @@
 import KML from "ol/format/KML.js";
-import { Polygon, Ring, MultiPolygon } from "@liuxspro/libs/geo";
+import { MultiPolygon, Polygon, Ring } from "@liuxspro/libs/geo";
+import JSZip from "jszip";
+
+async function get_kmldata_from_kmz(buffer) {
+  const zip = new JSZip();
+  let kmlData;
+  await zip.loadAsync(buffer);
+  const kmlFile = zip.file(/\.kml$/i)[0];
+  if (kmlFile) {
+    kmlData = await kmlFile.async("string");
+  }
+  return kmlData;
+}
 
 /**
- *
- * @param {File} kml_file
+ * @param {File} kmz_file
  */
-export async function parse_kml_file(kml_file) {
+export async function parse_kmz_file(kmz_file) {
+  const kml_text_data = await get_kmldata_from_kmz(
+    await kmz_file.arrayBuffer(),
+  );
+  const mpolygon = parse_kml_data(kml_text_data);
+  return {
+    name: kmz_file.name,
+    type: kmz_file.type,
+    mpolygon,
+  };
+}
+
+/**
+ * 从 KML 数据(text)中解析 多多边形
+ * @param {string} kml_data
+ * @returns {MultiPolygon}
+ */
+function parse_kml_data(kml_data) {
   const kml = new KML();
-  const kml_text_data = await kml_file.text();
-  const kml_features = kml.readFeatures(kml_text_data);
+  const kml_features = kml.readFeatures(kml_data);
   const polygons = kml_features
     .map((f) => get_polygon_from_feture(f))
     .filter((p) => p !== undefined)
@@ -17,8 +44,20 @@ export async function parse_kml_file(kml_file) {
     throw new Error("KML 文件中未检测到多边形数据");
   }
   console.log("KML Polygons:", polygons);
+  return new MultiPolygon(polygons);
+}
 
-  return { name: kml_file.name, type: kml_file.type, mpolygon: new MultiPolygon(polygons) };
+/**
+ * @param {File} kml_file
+ */
+export async function parse_kml_file(kml_file) {
+  const kml_text_data = await kml_file.text();
+  const mpolygon = parse_kml_data(kml_text_data);
+  return {
+    name: kml_file.name,
+    type: kml_file.type,
+    mpolygon,
+  };
 }
 
 function get_polygon_from_feture(feature) {
