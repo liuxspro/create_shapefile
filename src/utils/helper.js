@@ -1,7 +1,6 @@
 import { get_cgcs2000_wkt, get_zone, MultiPolygon } from "@liuxspro/libs/geo";
 import { round_to } from "@liuxspro/libs/utils";
 import { cgcs_to_lonlat, lonlat_to_cgcs } from "./transform";
-import { c } from "naive-ui";
 
 /**
  * 解析 CGCS2000 投影坐标的 多多边形
@@ -64,11 +63,12 @@ export function parse_mploygon(mpolygon) {
  */
 function merge_multi_polygons(mpolygons) {
   const valid_mpolygons = mpolygons.filter((mp) => mp !== undefined);
-  console.log("Valid MultiPolygons:", valid_mpolygons);
   if (valid_mpolygons.length === 0) {
     return undefined;
   }
-  const polygons = valid_mpolygons.map((mp) => mp.ensure_geojson_standard().polygons).flat();
+  const polygons = valid_mpolygons.map((mp) =>
+    mp.ensure_geojson_standard().polygons
+  ).flat();
   return new MultiPolygon(polygons);
 }
 
@@ -90,8 +90,12 @@ function merge_csv_polygons(csv_polygons) {
 }
 
 export function merge_ploygon(parse_result) {
-  const kml_mpolygons = parse_result.map((f) => f.mpolygon).filter((p) => p !== undefined);
-  const csv_polygons = parse_result.map((f) => f.polygon).filter((p) => p !== undefined);
+  const kml_mpolygons = parse_result.map((f) => f.mpolygon).filter((p) =>
+    p !== undefined
+  );
+  const csv_polygons = parse_result.map((f) => f.polygon).filter((p) =>
+    p !== undefined
+  );
 
   const merged_mpolygon = merge_multi_polygons(kml_mpolygons);
   const csv_mpolygon = merge_csv_polygons(csv_polygons);
@@ -104,7 +108,17 @@ export function merge_ploygon(parse_result) {
 
 export function correct_fields(fields) {
   // 验证字段
-  let { DKMC, DKDM, XZQDM, XZQMC, YDMJ, DH, SCRQ = null, SCDW = null, BZ = null } = fields;
+  let {
+    DKMC,
+    DKDM,
+    XZQDM,
+    XZQMC,
+    YDMJ,
+    DH,
+    SCRQ = null,
+    SCDW = null,
+    BZ = null,
+  } = fields;
   return { DKMC, DKDM, XZQMC, XZQDM, YDMJ, DH, SCRQ, SCDW, BZ };
 }
 
