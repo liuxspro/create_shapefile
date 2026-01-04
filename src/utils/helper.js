@@ -66,9 +66,7 @@ function merge_multi_polygons(mpolygons) {
   if (valid_mpolygons.length === 0) {
     return undefined;
   }
-  const polygons = valid_mpolygons.map((mp) =>
-    mp.ensure_geojson_standard().polygons
-  ).flat();
+  const polygons = valid_mpolygons.map((mp) => mp.ensure_geojson_standard().polygons).flat();
   return new MultiPolygon(polygons);
 }
 
@@ -90,12 +88,8 @@ function merge_csv_polygons(csv_polygons) {
 }
 
 export function merge_ploygon(parse_result) {
-  const kml_mpolygons = parse_result.map((f) => f.mpolygon).filter((p) =>
-    p !== undefined
-  );
-  const csv_polygons = parse_result.map((f) => f.polygon).filter((p) =>
-    p !== undefined
-  );
+  const kml_mpolygons = parse_result.map((f) => f.mpolygon).filter((p) => p !== undefined);
+  const csv_polygons = parse_result.map((f) => f.polygon).filter((p) => p !== undefined);
 
   const merged_mpolygon = merge_multi_polygons(kml_mpolygons);
   const csv_mpolygon = merge_csv_polygons(csv_polygons);
@@ -108,17 +102,7 @@ export function merge_ploygon(parse_result) {
 
 export function correct_fields(fields) {
   // 验证字段
-  let {
-    DKMC,
-    DKDM,
-    XZQDM,
-    XZQMC,
-    YDMJ,
-    DH,
-    SCRQ = null,
-    SCDW = null,
-    BZ = null,
-  } = fields;
+  let { DKMC, DKDM, XZQDM, XZQMC, YDMJ, DH, SCRQ = null, SCDW = null, BZ = null } = fields;
   return { DKMC, DKDM, XZQMC, XZQDM, YDMJ, DH, SCRQ, SCDW, BZ };
 }
 
@@ -127,7 +111,7 @@ export function correct_fields(fields) {
  * @param {MultiPolygon} multi_polygon
  * @returns
  */
-export function create_geojson(multi_polygon) {
+function _create_geojson(multi_polygon) {
   return {
     type: "FeatureCollection",
     features: [

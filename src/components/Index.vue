@@ -3,6 +3,8 @@ import { RouterLink } from "vue-router";
 import { ref, onMounted, defineAsyncComponent } from "vue";
 import { isTauri } from "@tauri-apps/api/core";
 import { get_create_num } from "../utils/stats";
+import { Analytics } from '@vercel/analytics/vue';
+
 const isDev = import.meta.env.DEV || isTauri();
 
 const Guide = defineAsyncComponent(() => import("./Guide.vue"))
@@ -22,6 +24,9 @@ onMounted(() => {
 </script>
 
 <template>
+  <div v-if="!isTauri() && !isDev">
+    <Analytics />
+  </div>
   <div id="main" class="flex flex-col lg:flex-row items-center h-full lg:justify-around">
     <div id="intro" class="p-8 mr-4 flex flex-col items-center print:hidden h-full">
       <div class="w-32 mx-auto my-0">

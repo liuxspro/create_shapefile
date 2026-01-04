@@ -1,7 +1,7 @@
 <script setup>
 import { ref, defineAsyncComponent } from "vue";
 import { centerOfMass } from "@turf/center-of-mass";
-import { parse_mploygon, create_geojson, merge_ploygon, correct_fields } from "../utils/helper";
+import { parse_mploygon, merge_ploygon, correct_fields } from "../utils/helper";
 import { parse_upload_files } from "../utils/sources";
 import { isTauri } from "@tauri-apps/api/core";
 import { create_bjwj } from "@liuxspro/create-shp";
@@ -47,8 +47,7 @@ async function handle_files() {
   input_values.value.DH = parsed.dh;
   input_values.value.YDMJ = Math.abs(parsed.area);
   // 计算中心点坐标
-  const mploygon_geojson = create_geojson(parsed.lonlat);
-  const center = centerOfMass(mploygon_geojson).geometry.coordinates;
+  const center = centerOfMass(parsed.lonlat.to_geojson()).geometry.coordinates;
   upload_file_data.value.center = center.map((i) => i.toFixed(6)).toString();
   // 添加矢量图层到 Map
   mapRef.value.add_multi_polygon_layer(parsed.lonlat);
@@ -66,6 +65,9 @@ const handleNameUpdate = (value) => {
 function load_file() {
   mapRef.value.clear_vec_layer();
   upload_file_data.value.uploaded = false;
+  // 清除面积和带号
+  input_values.value.YDMJ = null;
+  input_values.value.DH = null;
   const input = document.createElement("input");
   input.type = "file";
   input.accept = ".csv, .kml, .kmz";
