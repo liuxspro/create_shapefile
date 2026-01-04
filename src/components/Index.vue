@@ -1,7 +1,6 @@
 <script setup>
 import { RouterLink } from "vue-router";
 import { ref, onMounted, defineAsyncComponent } from "vue";
-import { NPopover } from "naive-ui";
 import { isTauri } from "@tauri-apps/api/core";
 import { get_create_num } from "../utils/stats";
 const isDev = import.meta.env.DEV || isTauri();
@@ -48,12 +47,6 @@ onMounted(() => {
           <span class="mx-1 px-1 py-0.5 bg-green-500 rounded-md text-white">
             {{ create_num }}</span>
           <span>个边界文件 </span>
-          <n-popover trigger="hover">
-            <template #trigger>
-              <span class="p-1 text-blue-600 font-semibold">赞赏作者 ☕</span>
-            </template>
-            <img src="@/assets/zs.webp" width="400px" />
-          </n-popover>
         </div>
       </div>
       <div id="action" class="my-2">

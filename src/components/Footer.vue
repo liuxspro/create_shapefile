@@ -7,11 +7,15 @@ import { NPopover } from "naive-ui";
     <p class="p-1">code with ❤️ by Liuxspro</p>
     <div class="flex justify-center items-center pt-2 mb-1">
       <span class="mr-1">Contact Me</span>
-      <a href=" mailto:liuxspro@gmail.com" class="ml-1 hover:underline mr-2 hover:text-gray-700">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
-          <path fill="currentColor"
-            d="m20 8l-8 5l-8-5V6l8 5l8-5m0-2H4c-1.11 0-2 .89-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2" />
-        </svg></a>
+      <n-popover trigger="hover">
+        <template #trigger>
+          <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" class="mr-1">
+            <path fill="currentColor"
+              d="M9.5 4C5.36 4 2 6.69 2 10c0 1.89 1.08 3.56 2.78 4.66L4 17l2.5-1.5c.89.31 1.87.5 2.91.5A5.2 5.2 0 0 1 9 14c0-3.31 3.13-6 7-6c.19 0 .38 0 .56.03C15.54 5.69 12.78 4 9.5 4m-3 2.5a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1m5 0a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1M16 9c-3.31 0-6 2.24-6 5s2.69 5 6 5c.67 0 1.31-.08 1.91-.25L20 20l-.62-1.87C20.95 17.22 22 15.71 22 14c0-2.76-2.69-5-6-5m-2 2.5a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1m4 0a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1" />
+          </svg>
+        </template>
+        <img src="@/assets/WX.jpg" width="280px" />
+      </n-popover>
       <n-popover trigger="hover">
         <template #trigger>
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 20 20">
@@ -22,11 +26,25 @@ import { NPopover } from "naive-ui";
         <img src="@/assets/QQ.jpg" width="280px" />
       </n-popover>
     </div>
+    <div>
+      <n-popover trigger="hover">
+        <template #trigger>
+          <span class="p-1 text-blue-600 font-semibold">☕ 赞赏作者 </span>
+        </template>
+        <img src="@/assets/zs.webp" width="400px" />
+      </n-popover>
+    </div>
     <p>
-      <a href="https://github.com/liuxspro/create_shapefile" target="_blank" class="ml-1 hover:underline">
-        CommitHash: {{ "__COMMIT__".slice(0, 7) }}
-      </a>
+      <span>v{{ "__version__" }}-</span>
+      <span>
+        <a href="https://github.com/liuxspro/create_shapefile" target="_blank"
+          class="ml-1 hover:underline text-blue-400">
+          {{ "__COMMIT__".slice(0, 7) }}
+        </a>
+      </span>
     </p>
-    <p class="text-xs">Build at {{ "__buildDate__" }}</p>
+    <p class="text-xs">
+      <span>Build at {{ "__buildDate__" }}</span>
+    </p>
   </div>
 </template>
