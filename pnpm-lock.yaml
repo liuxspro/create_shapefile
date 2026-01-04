@@ -23,6 +23,9 @@ importers:
       '@turf/center-of-mass':
         specifier: ^7.2.0
         version: 7.2.0
+      '@vercel/analytics':
+        specifier: ^1.6.1
+        version: 1.6.1(vue-router@4.5.1(vue@3.5.22))(vue@3.5.22)
       browser-fs-access:
         specifier: ^0.38.0
         version: 0.38.0
@@ -1176,6 +1179,32 @@ packages:
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
+
+  '@vercel/analytics@1.6.1':
+    resolution: {integrity: sha512-oH9He/bEM+6oKlv3chWuOOcp8Y6fo6/PSro8hEkgCW3pu9/OiCXiUpRUogDh3Fs3LH2sosDrx8CxeOLBEE+afg==}
+    peerDependencies:
+      '@remix-run/react': ^2
+      '@sveltejs/kit': ^1 || ^2
+      next: '>= 13'
+      react: ^18 || ^19 || ^19.0.0-rc
+      svelte: '>= 4'
+      vue: ^3
+      vue-router: ^4
+    peerDependenciesMeta:
+      '@remix-run/react':
+        optional: true
+      '@sveltejs/kit':
+        optional: true
+      next:
+        optional: true
+      react:
+        optional: true
+      svelte:
+        optional: true
+      vue:
+        optional: true
+      vue-router:
+        optional: true
 
   '@vitejs/plugin-vue@4.6.2':
     resolution: {integrity: sha512-kqf7SGFoG+80aZG6Pf+gsZIVvGSCKE98JbiWqcCV9cThtg91Jav0yvYFC9Zb+jKetNGF6ZKeoaxgZfND21fWKw==}
@@ -3594,6 +3623,11 @@ snapshots:
   '@types/resolve@1.20.2': {}
 
   '@types/trusted-types@2.0.7': {}
+
+  '@vercel/analytics@1.6.1(vue-router@4.5.1(vue@3.5.22))(vue@3.5.22)':
+    optionalDependencies:
+      vue: 3.5.22
+      vue-router: 4.5.1(vue@3.5.22)
 
   '@vitejs/plugin-vue@4.6.2(vite@5.4.20(lightningcss@1.30.1)(terser@5.44.1))(vue@3.5.22)':
     dependencies:
