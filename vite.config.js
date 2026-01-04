@@ -5,7 +5,6 @@ import replace from "@rollup/plugin-replace";
 import { VitePWA } from "vite-plugin-pwa";
 import { execSync } from "node:child_process";
 import { version } from "./package.json";
-console.log("Project Version:", version);
 
 const pwa = VitePWA({
   includeAssets: ["favicon.ico", "favicon.svg"],
