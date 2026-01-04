@@ -33,16 +33,19 @@ const pwa = VitePWA({
         type: "image/png",
       },
     ],
-    screenshots: [{
-      src: "screenshot.png",
-      sizes: "1200x600",
-      type: "image/png",
-      form_factor: "wide",
-    }, {
-      src: "screenshot.png",
-      sizes: "1200x600",
-      type: "image/png",
-    }],
+    screenshots: [
+      {
+        src: "screenshot.png",
+        sizes: "1200x600",
+        type: "image/png",
+        form_factor: "wide",
+      },
+      {
+        src: "screenshot.png",
+        sizes: "1200x600",
+        type: "image/png",
+      },
+    ],
   },
   devOptions: {
     enabled: true,
@@ -62,7 +65,7 @@ export default defineConfig(({ command, mode }) => {
       vue(),
       replace({
         __COMMIT__: execSync("git rev-parse HEAD").toString().trim(),
-        __buildDate__: new Date().toLocaleString(),
+        __buildDate__: new Date().toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" }),
         __version__: version,
         preventAssignment: true,
       }),
@@ -79,10 +82,10 @@ export default defineConfig(({ command, mode }) => {
       host: host || false,
       hmr: host
         ? {
-          protocol: "ws",
-          host,
-          port: 1421,
-        }
+            protocol: "ws",
+            host,
+            port: 1421,
+          }
         : undefined,
       watch: {
         // 3. tell Vite to ignore watching `src-tauri`

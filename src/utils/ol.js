@@ -1,7 +1,10 @@
+import GeoJSON from "ol/format/GeoJSON.js";
 import XYZ from "ol/source/XYZ.js";
 import TileLayer from "ol/layer/Tile";
 import { Fill, Stroke, Style, Text } from "ol/style.js";
 import LayerGroup from "ol/layer/Group";
+import { Vector as VectorLayer } from "ol/layer";
+import { Vector as VectorSource } from "ol/source";
 
 // 底图
 const GoogleMap = new XYZ({
@@ -9,8 +12,7 @@ const GoogleMap = new XYZ({
 });
 
 const EsriMap = new XYZ({
-  url:
-    "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+  url: "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
 });
 
 const Google = new TileLayer({
@@ -27,12 +29,12 @@ const Esri = new TileLayer({
   source: EsriMap,
 });
 
-const baseMaps = new LayerGroup({
+export const baseMaps = new LayerGroup({
   title: "底图",
   layers: [Google, Esri],
 });
 
-function create_polygon_style() {
+export function create_polygon_style() {
   return new Style({
     stroke: new Stroke({
       color: "red",
@@ -44,7 +46,7 @@ function create_polygon_style() {
   });
 }
 
-function create_text_style(text) {
+export function create_text_style(text) {
   return new Text({
     font: "1.5em sans-serif",
     text: text,
@@ -59,4 +61,14 @@ function create_text_style(text) {
   });
 }
 
-export { baseMaps, create_polygon_style, create_text_style };
+export function create_vector_layer_from_geojson(geojson_data) {
+  const vectorSource = new VectorSource({
+    features: new GeoJSON().readFeatures(geojson_data),
+  });
+
+  const vectorLayer = new VectorLayer({
+    source: vectorSource,
+    style: create_polygon_style(),
+  });
+  return vectorLayer;
+}
