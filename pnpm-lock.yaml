@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@liuxspro/create-shp':
-        specifier: jsr:^0.1.5
-        version: '@jsr/liuxspro__create-shp@0.1.5'
+        specifier: jsr:^0.1.6
+        version: '@jsr/liuxspro__create-shp@0.1.6'
       '@liuxspro/libs':
-        specifier: jsr:^0.1.11
-        version: '@jsr/liuxspro__libs@0.1.11'
+        specifier: jsr:^0.1.12
+        version: '@jsr/liuxspro__libs@0.1.12'
       '@liuxspro/ol-north-arrow':
         specifier: ^0.1.1
         version: 0.1.1(ol@10.6.1)
@@ -767,11 +767,11 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@jsr/liuxspro__create-shp@0.1.5':
-    resolution: {integrity: sha512-5zSdHWOm3NT1nWX7+z5d1+8LqZxON7sB9EVEpVpPGe9y9h+5ekDJ2SnZ1CzwKZiyR1TgjkXg+XUQ2fmfEyPWhA==, tarball: https://npm.jsr.io/~/11/@jsr/liuxspro__create-shp/0.1.5.tgz}
+  '@jsr/liuxspro__create-shp@0.1.6':
+    resolution: {integrity: sha512-vvnGeu2SC+Qg9dOgYUuadbd7aO8n0fFNCjD2E2h/77tw78SGcKEp1PCPtisX/ZIrhMhZBoMoOjxT6ZvVEEhbcg==, tarball: https://npm.jsr.io/~/11/@jsr/liuxspro__create-shp/0.1.6.tgz}
 
-  '@jsr/liuxspro__libs@0.1.11':
-    resolution: {integrity: sha512-Oar+138n/jSc1ZbBoLrRlFGDDo1ouUB5gQYmNM4VZnSUfpQ3Bmwoc9B/2eXapAV6tCiuCCk6poFQvvDSIA2OmA==, tarball: https://npm.jsr.io/~/11/@jsr/liuxspro__libs/0.1.11.tgz}
+  '@jsr/liuxspro__libs@0.1.12':
+    resolution: {integrity: sha512-XgPh+xYrfhKhDWwqYlmpJaiLbF+S+tfiXCqLLlIhf9TklGmyYpqWnrRujO7dCqdAaWE4s7PtffWyUyoHUJzD4A==, tarball: https://npm.jsr.io/~/11/@jsr/liuxspro__libs/0.1.12.tgz}
 
   '@juggle/resize-observer@3.4.0':
     resolution: {integrity: sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==}
@@ -3250,14 +3250,14 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@jsr/liuxspro__create-shp@0.1.5':
+  '@jsr/liuxspro__create-shp@0.1.6':
     dependencies:
-      '@jsr/liuxspro__libs': 0.1.11
+      '@jsr/liuxspro__libs': 0.1.12
       '@mapbox/shp-write': 0.4.3
       jszip: 3.10.1
       papaparse: 5.5.3
 
-  '@jsr/liuxspro__libs@0.1.11': {}
+  '@jsr/liuxspro__libs@0.1.12': {}
 
   '@juggle/resize-observer@3.4.0': {}
 
