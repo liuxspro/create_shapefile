@@ -17,9 +17,7 @@ async function get_kmldata_from_kmz(buffer) {
  * @param {File} kmz_file
  */
 export async function parse_kmz_file(kmz_file) {
-  const kml_text_data = await get_kmldata_from_kmz(
-    await kmz_file.arrayBuffer(),
-  );
+  const kml_text_data = await get_kmldata_from_kmz(await kmz_file.arrayBuffer());
   const mpolygon = parse_kml_data(kml_text_data);
   return {
     name: kmz_file.name,
@@ -63,8 +61,8 @@ export async function parse_kml_file(kml_file) {
 function get_polygon_from_feture(feature) {
   const geom = feature.getGeometry();
   const gemo_type = geom.getType();
-  console.log("Geometry Type:", gemo_type);
-  console.log("Geometry Coordinates:", geom.getCoordinates());
+  // console.log("Geometry Type:", gemo_type);
+  // console.log("Geometry Coordinates:", geom.getCoordinates());
   if (gemo_type === "Polygon") {
     const rings = geom.getLinearRings();
     return new Polygon(rings.map((ring) => new Ring(ring.getCoordinates())));
@@ -87,6 +85,10 @@ function get_polygon_from_feture(feature) {
       return new Polygon(rings.map((ring) => new Ring(ring.getCoordinates())));
     });
     return geo_polygons;
+  }
+
+  if (gemo_type === "Point" || gemo_type === "MultiPoint") {
+    throw new Error("KML 文件中为点数据，无法解析为多边形");
   }
 
   return undefined;
