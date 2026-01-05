@@ -13,25 +13,25 @@
     "@liuxspro/create-shp": "jsr:^0.1.7",
     "@liuxspro/libs": "jsr:^0.1.12",
     "@liuxspro/ol-north-arrow": "^0.1.1",
-    "@tauri-apps/api": "^2.9.0",
-    "@turf/center-of-mass": "^7.2.0",
+    "@tauri-apps/api": "^2.9.1",
+    "@turf/center-of-mass": "^7.3.1",
     "@vercel/analytics": "^1.6.1",
     "browser-fs-access": "^0.38.0",
-    "ol": "^10.6.1",
+    "ol": "^10.7.0",
     "ol-layerswitcher": "^4.1.2",
-    "proj4": "^2.19.10",
-    "vue": "^3.5.22",
-    "vue-router": "^4.5.1"
+    "proj4": "^2.20.2",
+    "vue": "^3.5.26",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@rollup/plugin-replace": "^5.0.7",
-    "@tailwindcss/postcss": "^4.1.14",
-    "@tauri-apps/cli": "^2.9.1",
+    "@tailwindcss/postcss": "^4.1.18",
+    "@tauri-apps/cli": "^2.9.6",
     "@vitejs/plugin-vue": "^4.6.2",
-    "naive-ui": "^2.43.1",
+    "naive-ui": "^2.43.2",
     "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.14",
-    "vite": "^5.4.20",
+    "tailwindcss": "^4.1.18",
+    "vite": "^5.4.21",
     "vite-plugin-pwa": "^0.19.8"
   }
 }
