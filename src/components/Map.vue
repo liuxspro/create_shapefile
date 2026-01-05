@@ -132,7 +132,7 @@ async function create_shp() {
           <div>
             <span>当前文件: </span>
             <div class="flex">
-              <code class="border border-slate-300 p-1 rounded-md mx-1" v-for="file in upload_file_data.files">
+              <code class="border border-slate-300 p-1 rounded-md mr-1" v-for="file in upload_file_data.files">
           {{ file }}</code>
             </div>
           </div>
