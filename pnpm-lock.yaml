@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@liuxspro/create-shp':
-        specifier: jsr:^0.1.6
-        version: '@jsr/liuxspro__create-shp@0.1.6'
+        specifier: jsr:^0.1.7
+        version: '@jsr/liuxspro__create-shp@0.1.7'
       '@liuxspro/libs':
         specifier: jsr:^0.1.12
         version: '@jsr/liuxspro__libs@0.1.12'
@@ -29,9 +29,6 @@ importers:
       browser-fs-access:
         specifier: ^0.38.0
         version: 0.38.0
-      jszip:
-        specifier: ^3.10.1
-        version: 3.10.1
       ol:
         specifier: ^10.6.1
         version: 10.6.1
@@ -770,8 +767,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@jsr/liuxspro__create-shp@0.1.6':
-    resolution: {integrity: sha512-vvnGeu2SC+Qg9dOgYUuadbd7aO8n0fFNCjD2E2h/77tw78SGcKEp1PCPtisX/ZIrhMhZBoMoOjxT6ZvVEEhbcg==, tarball: https://npm.jsr.io/~/11/@jsr/liuxspro__create-shp/0.1.6.tgz}
+  '@jsr/liuxspro__create-shp@0.1.7':
+    resolution: {integrity: sha512-GNRaX+CjltWgZUrYpHs21yhmiI1uDE5bNzY31KlVdOAzkRKsB5ecTX3M9P9Us+T1uK9/DusCaGFLJtmu4akm/g==, tarball: https://npm.jsr.io/~/11/@jsr/liuxspro__create-shp/0.1.7.tgz}
 
   '@jsr/liuxspro__libs@0.1.12':
     resolution: {integrity: sha512-XgPh+xYrfhKhDWwqYlmpJaiLbF+S+tfiXCqLLlIhf9TklGmyYpqWnrRujO7dCqdAaWE4s7PtffWyUyoHUJzD4A==, tarball: https://npm.jsr.io/~/11/@jsr/liuxspro__libs/0.1.12.tgz}
@@ -3279,7 +3276,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@jsr/liuxspro__create-shp@0.1.6':
+  '@jsr/liuxspro__create-shp@0.1.7':
     dependencies:
       '@jsr/liuxspro__libs': 0.1.12
       '@mapbox/shp-write': 0.4.3
