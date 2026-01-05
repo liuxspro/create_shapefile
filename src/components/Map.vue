@@ -34,13 +34,19 @@ const upload_mpolygon = ref({
 async function handle_files() {
   const file_list = this.files;
   console.log("File List:", file_list);
-  const file_data = await parse_upload_files(file_list);
-  upload_file_data.value.files = file_data.map((i) => i.name);
-  console.log("File Data:", file_data);
-  const mpolygon = merge_ploygon(file_data);
-  console.log("Multi Polygons:", mpolygon);
+  let file_data;
+  let mpolygon;
+  try {
+    file_data = await parse_upload_files(file_list);
+    upload_file_data.value.files = file_data.map((i) => i.name);
+    console.log("File Data:", file_data);
+    mpolygon = merge_ploygon(file_data);
+    console.log("Multi Polygons:", mpolygon);
+  } catch (error) {
+    message.error(`文件解析失败: ${error.message}`, { duration: 5000 });
+    return;
+  }
   const parsed = parse_mploygon(mpolygon);
-
   console.log("Parsed:", parsed);
   upload_mpolygon.value.cgcs = parsed.cgcs;
   upload_mpolygon.value.WKT = parsed.wkt;
