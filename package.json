@@ -27,11 +27,11 @@
     "@rollup/plugin-replace": "^5.0.7",
     "@tailwindcss/postcss": "^4.1.18",
     "@tauri-apps/cli": "^2.9.6",
-    "@vitejs/plugin-vue": "^4.6.2",
+    "@vitejs/plugin-vue": "^6.0.3",
     "naive-ui": "^2.43.2",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
-    "vite": "^5.4.21",
-    "vite-plugin-pwa": "^0.19.8"
+    "vite": "^7.3.0",
+    "vite-plugin-pwa": "^1.2.0"
   }
 }
