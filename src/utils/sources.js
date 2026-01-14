@@ -15,12 +15,12 @@ export async function parse_upload_files(file_list) {
       result.push(csv_result);
     }
 
-    if (file.type.includes("kml")) {
+    if (file.type.includes("kml") || file.name.toLowerCase().endsWith(".kml")) {
       const kml_result = await parse_kml_file(file);
       result.push(kml_result);
     }
 
-    if (file.type.includes("kmz")) {
+    if (file.type.includes("kmz") || file.name.toLowerCase().endsWith(".kmz")) {
       const kml_result = await parse_kmz_file(file);
       result.push(kml_result);
     }
