@@ -92,11 +92,13 @@ async function create_shp() {
   if (fields) {
     const filename = `${stage.value}${fields.DKDM}`;
     const bjwj = await create_bjwj(stage.value, fields, upload_mpolygon.value.cgcs, upload_mpolygon.value.WKT);
-    const save = await fileSave(bjwj, {
+    const blob = new Blob([bjwj], { type: "application/zip" });
+    const save = await fileSave(blob, {
       fileName: filename,
       extensions: [".zip"],
       startIn: "downloads",
-    }).catch((_err) => {
+    }).catch((err) => {
+      console.log(err);
       message.error(`取消保存`, { duration: 5000 });
     });
     if (save) {
