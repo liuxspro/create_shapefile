@@ -1,11 +1,11 @@
 <script setup>
 import { NPopover } from "naive-ui";
+import { CodeWith } from "@liuxspro/vue-components"
 </script>
 
 <template>
   <div class="py-12 text-center font-mono text-sm">
-    <p class="p-1">code with ❤️ by Liuxspro</p>
-    <div class="flex justify-center items-center pt-2 mb-1">
+    <div class="flex justify-center items-center">
       <span class="mr-1">Contact Me</span>
       <n-popover trigger="hover">
         <template #trigger>
@@ -46,5 +46,7 @@ import { NPopover } from "naive-ui";
     <p class="text-xs">
       <span>Build at {{ "__buildDate__" }}</span>
     </p>
+    <code-with name="Liuxspro"
+      class="text-xs font-mono p-1 transition-all duration-300 ease-in-out hover:-translate-y-0.5 inline-block" />
   </div>
 </template>

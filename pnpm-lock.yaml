@@ -9,14 +9,17 @@ importers:
   .:
     dependencies:
       '@liuxspro/create-shp':
-        specifier: jsr:^0.1.6
-        version: '@jsr/liuxspro__create-shp@0.1.6'
+        specifier: jsr:^0.1.8
+        version: '@jsr/liuxspro__create-shp@0.1.8'
       '@liuxspro/libs':
         specifier: jsr:^0.1.12
         version: '@jsr/liuxspro__libs@0.1.12'
       '@liuxspro/ol-north-arrow':
         specifier: ^0.1.1
         version: 0.1.1(ol@10.6.1)
+      '@liuxspro/vue-components':
+        specifier: ^0.1.1
+        version: 0.1.1
       '@tauri-apps/api':
         specifier: ^2.9.0
         version: 2.9.0
@@ -29,9 +32,6 @@ importers:
       browser-fs-access:
         specifier: ^0.38.0
         version: 0.38.0
-      jszip:
-        specifier: ^3.10.1
-        version: 3.10.1
       ol:
         specifier: ^10.6.1
         version: 10.6.1
@@ -770,8 +770,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@jsr/liuxspro__create-shp@0.1.6':
-    resolution: {integrity: sha512-vvnGeu2SC+Qg9dOgYUuadbd7aO8n0fFNCjD2E2h/77tw78SGcKEp1PCPtisX/ZIrhMhZBoMoOjxT6ZvVEEhbcg==, tarball: https://npm.jsr.io/~/11/@jsr/liuxspro__create-shp/0.1.6.tgz}
+  '@jsr/liuxspro__create-shp@0.1.8':
+    resolution: {integrity: sha512-vIvpnUXVhkpiLLCtty1C1LfnNh12r4ExZGj3YIg6hIYqan3TaZLlIpWYCx4XhXE62swybwEekR185Zp0exlDJQ==, tarball: https://npm.jsr.io/~/11/@jsr/liuxspro__create-shp/0.1.8.tgz}
 
   '@jsr/liuxspro__libs@0.1.12':
     resolution: {integrity: sha512-XgPh+xYrfhKhDWwqYlmpJaiLbF+S+tfiXCqLLlIhf9TklGmyYpqWnrRujO7dCqdAaWE4s7PtffWyUyoHUJzD4A==, tarball: https://npm.jsr.io/~/11/@jsr/liuxspro__libs/0.1.12.tgz}
@@ -783,6 +783,10 @@ packages:
     resolution: {integrity: sha512-gt9TX718lcS7HaDRc3HJulpHldW9HkUojQJUOEVI+b6TN7t30SufmzWKjicudw0F+wdwQsGJ0OvfyjPCdhhwUA==}
     peerDependencies:
       ol: ^10
+
+  '@liuxspro/vue-components@0.1.1':
+    resolution: {integrity: sha512-cP0v+HOqFY1jlK0eHUOu8I2+vX7pteBOBccjTL6hRNKFRJaARrfgcuDf5asQA1vGdSYr0hUqmiOEnvbsh2NOUA==}
+    engines: {node: '>=18.0.0', npm: '>=9.0.0'}
 
   '@mapbox/shp-write@0.4.3':
     resolution: {integrity: sha512-mkKIHgtnytyP+cXfk+joYeWwk+SODZ7COQusTcO1rZQVUn68MjzW2F74XMsNIusabnwj5aoKNI8B3mYq9KZ9AQ==}
@@ -3279,7 +3283,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@jsr/liuxspro__create-shp@0.1.6':
+  '@jsr/liuxspro__create-shp@0.1.8':
     dependencies:
       '@jsr/liuxspro__libs': 0.1.12
       '@mapbox/shp-write': 0.4.3
@@ -3293,6 +3297,8 @@ snapshots:
   '@liuxspro/ol-north-arrow@0.1.1(ol@10.6.1)':
     dependencies:
       ol: 10.6.1
+
+  '@liuxspro/vue-components@0.1.1': {}
 
   '@mapbox/shp-write@0.4.3':
     dependencies:

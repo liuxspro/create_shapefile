@@ -1,17 +1,6 @@
 import KML from "ol/format/KML.js";
 import { MultiPolygon, Polygon, Ring } from "@liuxspro/libs/geo";
-import JSZip from "jszip";
-
-async function get_kmldata_from_kmz(buffer) {
-  const zip = new JSZip();
-  let kmlData;
-  await zip.loadAsync(buffer);
-  const kmlFile = zip.file(/\.kml$/i)[0];
-  if (kmlFile) {
-    kmlData = await kmlFile.async("string");
-  }
-  return kmlData;
-}
+import { get_kmldata_from_kmz } from "@liuxspro/create-shp";
 
 /**
  * @param {File} kmz_file

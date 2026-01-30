@@ -10,14 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@liuxspro/create-shp": "jsr:^0.1.6",
+    "@liuxspro/create-shp": "jsr:^0.1.8",
     "@liuxspro/libs": "jsr:^0.1.12",
     "@liuxspro/ol-north-arrow": "^0.1.1",
+    "@liuxspro/vue-components": "^0.1.1",
     "@tauri-apps/api": "^2.9.0",
     "@turf/center-of-mass": "^7.2.0",
     "@vercel/analytics": "^1.6.1",
     "browser-fs-access": "^0.38.0",
-    "jszip": "^3.10.1",
     "ol": "^10.6.1",
     "ol-layerswitcher": "^4.1.2",
     "proj4": "^2.19.10",
