@@ -5,6 +5,7 @@ import replace from "@rollup/plugin-replace";
 import { VitePWA } from "vite-plugin-pwa";
 import { execSync } from "node:child_process";
 import { version } from "./package.json";
+import tailwindcss from "@tailwindcss/vite";
 
 const pwa = VitePWA({
   includeAssets: ["favicon.ico", "favicon.svg"],
@@ -63,6 +64,7 @@ export default defineConfig(({ command, mode }) => {
   return {
     plugins: [
       vue(),
+      tailwindcss(),
       replace({
         __COMMIT__: execSync("git rev-parse HEAD").toString().trim(),
         __buildDate__: new Date().toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" }),

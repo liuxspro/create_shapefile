@@ -1,10 +1,6 @@
 @import "ol/ol.css";
 @import "ol-layerswitcher/dist/ol-layerswitcher.css";
-
-/* @tailwind base; */
-@layer {
-  @import "tailwindcss";
-}
+@import "tailwindcss";
 
 html,
 body {
