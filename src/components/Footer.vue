@@ -5,8 +5,33 @@ import { CodeWith } from "@liuxspro/vue-components"
 
 <template>
   <div class="py-12 text-center font-mono text-sm">
+    <div>
+      <n-popover trigger="hover">
+        <template #trigger>
+          <span class="p-1 text-blue-600 font-semibold">工具帮到您了？可以请我吃块饼干吗🍪 </span>
+        </template>
+        <div class="text-center">
+          <p>月薪三千，快养不起家了🤣</p>
+          <p>1元2元都是鼓励，感谢您的温柔相助。😊</p>
+          <p>微信扫码赞赏👇</p>
+        </div>
+
+        <img src="@/assets/zs.jpg" width="400px" />
+      </n-popover>
+    </div>
+    <p>
+      <span>v{{ "__version__" }}-</span>
+      <span>
+        <a href="https://github.com/liuxspro/create_shapefile" target="_blank"
+          class="ml-1 hover:underline text-blue-400">
+          {{ "__COMMIT__".slice(0, 7) }}
+        </a>
+      </span>
+      <span>-{{ "__buildDate__" }}</span>
+    </p>
     <div class="flex justify-center items-center">
-      <span class="mr-1">Contact Me</span>
+      <code-with name="Liuxspro"
+        class="text-xs font-mono p-1 transition-all duration-300 ease-in-out hover:-translate-y-0.5 inline-block" />
       <n-popover trigger="hover">
         <template #trigger>
           <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" class="mr-1">
@@ -26,27 +51,7 @@ import { CodeWith } from "@liuxspro/vue-components"
         <img src="@/assets/QQ.jpg" width="280px" />
       </n-popover>
     </div>
-    <div>
-      <n-popover trigger="hover">
-        <template #trigger>
-          <span class="p-1 text-blue-600 font-semibold">☕ 赞赏作者 </span>
-        </template>
-        <img src="@/assets/zs.webp" width="400px" />
-      </n-popover>
-    </div>
-    <p>
-      <span>v{{ "__version__" }}-</span>
-      <span>
-        <a href="https://github.com/liuxspro/create_shapefile" target="_blank"
-          class="ml-1 hover:underline text-blue-400">
-          {{ "__COMMIT__".slice(0, 7) }}
-        </a>
-      </span>
-    </p>
-    <p class="text-xs">
-      <span>Build at {{ "__buildDate__" }}</span>
-    </p>
-    <code-with name="Liuxspro"
-      class="text-xs font-mono p-1 transition-all duration-300 ease-in-out hover:-translate-y-0.5 inline-block" />
+
+
   </div>
 </template>
