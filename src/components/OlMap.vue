@@ -78,5 +78,5 @@ defineExpose({
 </script>
 
 <template>
-  <div id="map" class="px-8 py-4 lg:py-4 lg:pl-0 lg:pr-8 w-full lg:h-auto lg:min-h-[800px] h-[400px]"></div>
+  <div id="map" class="px-8 py-4 lg:py-4 lg:pl-0 lg:pr-8 w-full lg:h-auto lg:min-h-200 h-100"></div>
 </template>
