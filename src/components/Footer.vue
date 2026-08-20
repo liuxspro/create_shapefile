@@ -11,8 +11,6 @@ import { CodeWith } from "@liuxspro/vue-components"
           <span class="p-1 text-blue-600 font-semibold">工具帮到您了？可以请我吃块饼干吗🍪 </span>
         </template>
         <div class="text-center">
-          <p>月薪三千，快养不起家了🤣</p>
-          <p>1元2元都是鼓励，感谢您的温柔相助。😊</p>
           <p>微信扫码赞赏👇</p>
         </div>
 
