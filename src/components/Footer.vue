@@ -13,9 +13,9 @@ import { CodeWith } from "@liuxspro/vue-components"
         <div class="text-center">
           <p>微信扫码赞赏👇</p>
         </div>
-
         <img src="@/assets/zs.jpg" width="400px" />
       </n-popover>
+
     </div>
     <p>
       <span>v{{ "__version__" }}-</span>
@@ -49,7 +49,19 @@ import { CodeWith } from "@liuxspro/vue-components"
         <img src="@/assets/QQ.jpg" width="280px" />
       </n-popover>
     </div>
+    <n-popover trigger="hover">
+      <template #trigger>
+        <span class="p-1 text-blue-300 font-semibold">离线版软件下载⬇️</span>
+      </template>
+      <div>
 
+        <p>离线版仅支持 Win10 以上系统</p>
+        <p>网盘链接:
+          <a class="hover:underline text-blue-400" target="_blank"
+            href="https://pan.quark.cn/s/30b1c47ffb75?pwd=VZT4">https://pan.quark.cn/s/30b1c47ffb75?pwd=VZT4</a>
+        </p>
 
+      </div>
+    </n-popover>
   </div>
 </template>
