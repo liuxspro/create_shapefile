@@ -15,8 +15,8 @@ importers:
         specifier: jsr:^0.1.16
         version: '@jsr/liuxspro__libs@0.1.16'
       '@liuxspro/ol-north-arrow':
-        specifier: ^0.1.1
-        version: 0.1.1(ol@10.10.0)
+        specifier: jsr:^0.1.1
+        version: '@jsr/liuxspro__ol-north-arrow@0.1.1'
       '@liuxspro/vue-components':
         specifier: ^0.1.1
         version: 0.1.1
@@ -761,13 +761,11 @@ packages:
   '@jsr/liuxspro__libs@0.1.16':
     resolution: {integrity: sha512-iQL0xCTiyW+XdQt6yzrEMBzJLn9Y3/TkL3gE0Mr15YnGViXpBKpXV2kBglt+Y0E5tgq/v3/Aj+GgdKtXw9O1fQ==, tarball: https://npm.jsr.io/~/11/@jsr/liuxspro__libs/0.1.16.tgz}
 
+  '@jsr/liuxspro__ol-north-arrow@0.1.1':
+    resolution: {integrity: sha512-BKKWh3Grl4sTATBVC/4CIcscaU8eb+FLuKW1UxNxtBPebPnsIs2KqU0JTI/N9QEp0EAmZt79RgWq2xvop353nQ==, tarball: https://npm.jsr.io/~/11/@jsr/liuxspro__ol-north-arrow/0.1.1.tgz}
+
   '@juggle/resize-observer@3.4.0':
     resolution: {integrity: sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==}
-
-  '@liuxspro/ol-north-arrow@0.1.1':
-    resolution: {integrity: sha512-gt9TX718lcS7HaDRc3HJulpHldW9HkUojQJUOEVI+b6TN7t30SufmzWKjicudw0F+wdwQsGJ0OvfyjPCdhhwUA==}
-    peerDependencies:
-      ol: ^10
 
   '@liuxspro/vue-components@0.1.1':
     resolution: {integrity: sha512-cP0v+HOqFY1jlK0eHUOu8I2+vX7pteBOBccjTL6hRNKFRJaARrfgcuDf5asQA1vGdSYr0hUqmiOEnvbsh2NOUA==}
@@ -3296,11 +3294,11 @@ snapshots:
 
   '@jsr/liuxspro__libs@0.1.16': {}
 
-  '@juggle/resize-observer@3.4.0': {}
-
-  '@liuxspro/ol-north-arrow@0.1.1(ol@10.10.0)':
+  '@jsr/liuxspro__ol-north-arrow@0.1.1':
     dependencies:
       ol: 10.10.0
+
+  '@juggle/resize-observer@3.4.0': {}
 
   '@liuxspro/vue-components@0.1.1': {}
 
