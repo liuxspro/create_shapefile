@@ -6,7 +6,7 @@ import { Map, View } from "ol";
 import { ScaleLine, Zoom } from "ol/control";
 
 import LayerSwitcher from "ol-layerswitcher";
-import { NorthArrow } from "@liuxspro/ol-north-arrow";
+import NorthArrow from "@liuxspro/ol-north-arrow";
 import { create_vector_layer_from_geojson, create_text_style, create_polygon_style } from "../utils/ol";
 import { Vector as VectorLayer } from "ol/layer";
 // import { create_geojson } from "../utils/helper";
@@ -25,7 +25,7 @@ onMounted(() => {
     controls: [
       new ScaleLine({ units: "metric" }),
       new Zoom(),
-      new NorthArrow({ style: "D3", width: "80px" }),
+      new NorthArrow({ style: "D2", width: "100px" }),
       // https://github.com/walkermatt/ol-layerswitcher
       new LayerSwitcher({
         activationMode: "click",
@@ -78,5 +78,5 @@ defineExpose({
 </script>
 
 <template>
-  <div id="map" class="px-8 py-4 lg:py-4 lg:pl-0 lg:pr-8 w-full lg:h-auto lg:min-h-[800px] h-[400px]"></div>
+  <div id="map" class="px-8 py-4 lg:py-4 lg:pl-0 lg:pr-8 w-full lg:h-auto lg:min-h-200 h-100"></div>
 </template>

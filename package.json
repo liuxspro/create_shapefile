@@ -1,7 +1,7 @@
 {
   "name": "create_shapefile",
   "private": true,
-  "version": "0.2.1",
+  "version": "0.2.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,28 +11,28 @@
   },
   "dependencies": {
     "@liuxspro/create-shp": "jsr:^0.1.8",
-    "@liuxspro/libs": "jsr:^0.1.12",
-    "@liuxspro/ol-north-arrow": "^0.1.1",
+    "@liuxspro/libs": "jsr:^0.1.16",
+    "@liuxspro/ol-north-arrow": "jsr:^0.1.1",
     "@liuxspro/vue-components": "^0.1.1",
-    "@tailwindcss/vite": "^4.1.18",
-    "@tauri-apps/api": "^2.9.0",
-    "@turf/center-of-mass": "^7.2.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@tauri-apps/api": "^2.11.1",
+    "@turf/center-of-mass": "^7.4.0",
     "@vercel/analytics": "^1.6.1",
     "browser-fs-access": "^0.38.0",
-    "ol": "^10.6.1",
+    "ol": "^10.10.0",
     "ol-layerswitcher": "^4.1.2",
-    "proj4": "^2.19.10",
-    "vue": "^3.5.22",
-    "vue-router": "^4.5.1"
+    "proj4": "^2.21.0",
+    "vue": "^3.5.41",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@rollup/plugin-replace": "^5.0.7",
-    "@tauri-apps/cli": "^2.9.1",
+    "@tauri-apps/cli": "^2.11.4",
     "@vitejs/plugin-vue": "^4.6.2",
-    "naive-ui": "^2.43.1",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.18",
-    "vite": "^5.4.20",
+    "naive-ui": "^2.45.1",
+    "postcss": "^8.5.26",
+    "tailwindcss": "^4.3.3",
+    "vite": "^5.4.21",
     "vite-plugin-pwa": "^0.19.8"
   }
 }
